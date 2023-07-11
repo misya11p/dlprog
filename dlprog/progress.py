@@ -1,5 +1,6 @@
 import time
 from typing import Optional, Union, Callable
+import unicodedata
 
 
 SPM = 60 # seconds per minute
@@ -20,6 +21,21 @@ def time_format(t: float) -> str:
     return f'{int(h):02}:{int(m):02}:{s:05.2f}'
 
 
+def count_length(text: str) -> int:
+    """
+    Count the length of the string considering the width of the
+    character.
+    """
+    length = 0
+    for c in text:
+        j = unicodedata.east_asian_width(c)
+        if j in 'FWA':
+            length = length + 2
+        else:
+            length = length + 1
+    return length
+
+
 Number = Union[int, float]
 
 class Progress:
@@ -30,7 +46,7 @@ class Progress:
         agg_fn: Union[None, str, Callable[[Number, Number], Number]] = 'mean',
         label: Optional[str] = None,
         width: int = 40,
-        symbol: str = '#',
+        symbol: str = '█',
     ):
         """
         Progress bar class.
