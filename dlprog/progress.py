@@ -60,13 +60,16 @@ class TrainProgress:
         self._epoch_reset()
 
     def _draw_bar(self):
+        index_text = f'{self._epoch_text}:'
         bar_text = (self.symbol * int(self.width * self.prop))
         bar_text = bar_text.ljust(self.width)
         prop_text = f'{int(self.prop * 100)}%'.rjust(4)
-        time_text = time_format(self.now_time - self.start_time)
+        time_text = f'[{time_format(self.now_time - self.start_time)}]'
         loss_text = f'loss: {self.epoch_loss / self._loss_den:.4f}'
-        text = ' | '.join([
-            f'{self._epoch_text}: {bar_text} {prop_text}',
+        text = ' '.join([
+            index_text,
+            bar_text,
+            prop_text,
             time_text,
             loss_text
         ])
