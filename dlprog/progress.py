@@ -5,6 +5,15 @@ from typing import Optional, Union, Callable
 SPM = 60 # seconds per minute
 MPH = 60 # minutes per hour
 def time_format(t: float) -> str:
+    """
+    Time format.
+
+    Args:
+        t (float): time (s)
+
+    Returns:
+        str: Formatted time string
+    """
     h = t // (MPH * SPM)
     m = t // MPH
     s = t % MPH
@@ -16,13 +25,27 @@ Number = Union[int, float]
 class Progress:
     def __init__(
         self,
-        n_iter: int = None,
-        n_epochs: int = None,
-        agg_fn: Union[str, Callable[[Number, Number], Number]] = 'mean',
-        label: str = None,
+        n_iter: Optional[int] = None,
+        n_epochs: Optional[int] = None,
+        agg_fn: Union[None, str, Callable[[Number, Number], Number]] = 'mean',
+        label: Optional[str] = None,
         width: int = 40,
         symbol: str = '#',
     ):
+        """
+        Progress bar class.
+        When the following attributes are None, the progress bar is not 
+        displayed correctly.
+
+        Args:
+            n_iter (int): Number of iterations per epoch.
+            n_epochs (int): Number of epochs.
+            agg_fn (Union[str, Callable[[Number, Number], Number]]):
+                Aggregation function for epoch value and weight. 
+            label (str): Label for progress bar.
+            width (int): Width of progress bar.
+            symbol (str): Symbol for progress bar.
+        """
         self.n_iter = n_iter
         self.n_epochs = n_epochs
         self.agg_fn = agg_fn
@@ -43,11 +66,13 @@ class Progress:
             self._agg_fn = self.agg_fn
 
     def set(self, **kwargs):
+        """Set attributes."""
         for k, v in kwargs.items():
             setattr(self, k, v)
         self._set_agg_fn()
 
     def reset(self):
+        """Reset attributes. """
         self.is_training = False
         self.now_epoch = 1
         self._epoch_reset()
@@ -70,6 +95,7 @@ class Progress:
         self._epoch_text = epoch_text
 
     def start(self, **kwargs):
+        """Start training. Initialize start time and epoch."""
         self.set(**kwargs)
         assert self.n_iter is not None, '"n_iter" is not set.'
         self.is_training = True
@@ -96,17 +122,32 @@ class Progress:
 
     def update(
         self,
-        loss: Optional[float] = None,
+        value: Optional[float] = None,
         weight: Number = 1,
         advance: int = 1,
         auto_step: bool = True,
     ):
+        """
+        Update values.
+
+        Args:
+            value (Optional[float]):
+                value. If None, only the progress bar advances. Defaults
+                to None.
+            weight (Number, optional):
+                weight of value. Defaults to 1.
+            advance (int, optional):
+                Number of iterations to advance. Defaults to 1.
+            auto_step (bool, optional):
+                If True, step() is called when the number of iterations
+                reaches n_iter. Defaults to True.
+        """
         if not self.is_training:
             self._start()
 
         self.now_iter += advance
-        if loss is not None:
-            self.epoch_value += weight * loss
+        if value is not None:
+            self.epoch_value += weight * value
             self._epoch_value_weight += weight
         self.prop = min(self.now_iter / self.n_iter, 1)
         self.now_time = time.time()
@@ -115,6 +156,7 @@ class Progress:
             self.step()
 
     def step(self):
+        """Step to the next epoch."""
         print()
         self.now_epoch += 1
         self._epoch_reset()
@@ -126,6 +168,12 @@ def train_progress(
     width: int = 40,
     symbol: str = '#',
 ) -> Progress:
+    """
+    Return a progress bar for deep learning training.
+
+    Returns:
+        Progress: Progress bar object.
+    """
     return Progress(
         n_iter=n_iter,
         n_epochs=n_epochs,
