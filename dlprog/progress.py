@@ -28,7 +28,7 @@ class Progress:
         n_iter: Optional[int] = None,
         n_epochs: Optional[int] = None,
         agg_fn: Union[None, str, Callable[[Number, Number], Number]] = 'mean',
-        label: Optional[str] = None,
+        label: Optional[str] = 'value',
         width: int = 40,
         symbol: str = '#',
     ):
@@ -113,7 +113,7 @@ class Progress:
             value = self._agg_fn(self.epoch_value, self._epoch_value_weight)
         else:
             value = 0.
-        value_text += f'{value:.4f}'
+        value_text += f'{value:.5f}'
         text = ' '.join([
             index_text,
             bar_text,
@@ -131,7 +131,7 @@ class Progress:
         auto_step: bool = True,
     ):
         """
-        Update values.
+        Update progress bar and aggregate value.
 
         Args:
             value (Optional[float]):
