@@ -1,5 +1,6 @@
-from .progress import TrainProgress
+from .progress import Progress, train_progress
 
 __all__ = [
-    'TrainProgress'
+    'Progress',
+    'train_progress',
 ]

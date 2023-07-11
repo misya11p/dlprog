@@ -13,16 +13,18 @@ def time_format(t: float) -> str:
 
 Number = Union[int, float]
 
-class TrainProgress:
+class Progress:
     def __init__(
         self,
         n_iter: int = None,
         n_epochs: int = None,
-        width: int = 50,
+        label: str = None,
+        width: int = 40,
         symbol: str = '#',
     ):
         self.n_iter = n_iter
         self.n_epochs = n_epochs
+        self.label = label
         self.width = width
         self.symbol = symbol
         self.reset()
@@ -65,13 +67,14 @@ class TrainProgress:
         bar_text = bar_text.ljust(self.width)
         prop_text = f'{int(self.prop * 100)}%'.rjust(4)
         time_text = f'[{time_format(self.now_time - self.start_time)}]'
-        loss_text = f'loss: {self.epoch_loss / self._loss_den:.4f}'
+        value_text = f'{self.label}: ' if self.label else ''
+        value_text += f'{self.epoch_loss / self._loss_den:.4f}'
         text = ' '.join([
             index_text,
             bar_text,
             prop_text,
             time_text,
-            loss_text
+            value_text
         ])
         print(text, end='\r', flush=True)
 
@@ -99,3 +102,18 @@ class TrainProgress:
         print()
         self.now_epoch += 1
         self._epoch_reset()
+
+
+def train_progress(
+    n_iter: int = None,
+    n_epochs: int = None,
+    width: int = 40,
+    symbol: str = '#',
+) -> Progress:
+    return Progress(
+        n_iter=n_iter,
+        n_epochs=n_epochs,
+        label='loss',
+        width=width,
+        symbol=symbol,
+    )
