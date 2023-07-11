@@ -1,6 +1,5 @@
 import time
 from typing import Optional, Union, Callable
-import unicodedata
 
 
 SPM = 60 # seconds per minute
@@ -18,22 +17,7 @@ def time_format(t: float) -> str:
     h = t // (MPH * SPM)
     m = t // MPH
     s = t % MPH
-    return f'{int(h):02}:{int(m):02}:{s:05.2f}'
-
-
-def count_length(text: str) -> int:
-    """
-    Count the length of the string considering the width of the
-    character.
-    """
-    length = 0
-    for c in text:
-        j = unicodedata.east_asian_width(c)
-        if j in 'FWA':
-            length = length + 2
-        else:
-            length = length + 1
-    return length
+    return f'{int(h):02}:{int(m):02}:{s:05.2f}' 
 
 
 Number = Union[int, float]
@@ -46,7 +30,7 @@ class Progress:
         agg_fn: Union[None, str, Callable[[Number, Number], Number]] = 'mean',
         label: Optional[str] = None,
         width: int = 40,
-        symbol: str = '█',
+        symbol: str = '#',
     ):
         """
         Progress bar class.
@@ -120,12 +104,15 @@ class Progress:
 
     def _draw_bar(self):
         index_text = f'{self._epoch_text}:'
-        bar_text = (self.symbol * int(self.width * self.prop))
+        bar_text = self.symbol * int(self.width * self.prop)
         bar_text = bar_text.ljust(self.width)
         prop_text = f'{int(self.prop * 100)}%'.rjust(4)
         time_text = f'[{time_format(self.now_time - self.start_time)}]'
         value_text = f'{self.label}: ' if self.label else ''
-        value = self._agg_fn(self.epoch_value, self._epoch_value_weight)
+        if self._epoch_value_weight:
+            value = self._agg_fn(self.epoch_value, self._epoch_value_weight)
+        else:
+            value = 0.
         value_text += f'{value:.4f}'
         text = ' '.join([
             index_text,
