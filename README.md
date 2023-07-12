@@ -87,3 +87,9 @@ If you want to obtain exact values considering batch size:
 ```python
 prog.update(loss.item(), weight=len(x))
 ```
+
+## Version History
+
+### [1.0.0](https://pypi.org/project/dlprog/1.0.0/) (2023-07-13, Latest)
+- Add `Progress` class.
+- Add `train_progress` function.
