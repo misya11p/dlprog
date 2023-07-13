@@ -15,6 +15,7 @@ class Progress:
         width: int = 40,
         symbol: str = '#',
         leave_freq: int = 1,
+        unit: int = 1,
     ):
         """
         Progress bar class.
@@ -38,6 +39,8 @@ class Progress:
             leave_freq (int):
                 Frequency of leaving the progress bar. If <= 0, none are
                 left. Defaults to 1.
+            unit (int):
+                Unit of progress bar (epoch). Defaults to 1.
         """
         self.n_iter = n_iter
         self.n_epochs = n_epochs
@@ -46,6 +49,7 @@ class Progress:
         self.width = width
         self.symbol = symbol
         self.leave_freq = leave_freq
+        self.unit = unit
         self.reset()
 
     _agg_fns = {
@@ -60,19 +64,45 @@ class Progress:
         else:
             self._agg_fn = self.agg_fn
 
+    def _set_unit(self):
+        self._unit = max(1, int(self.unit))
+
+    def _set_n_epochs(self):
+        self._n_digits = len(str(self.n_epochs))
+
+    def _set_attr(self):
+        self._set_agg_fn()
+        self._set_unit()
+        self._set_n_epochs()
+        self._set_epoch_text()
+
+    def _set_epoch_text(self):
+        """Set epoch text."""
+        if self.n_epochs:
+            if self._unit >= 2:
+                first = self.now_epoch - self._unit + 1
+                epoch_text = f'{first}~{self.now_epoch}'
+                epoch_text = epoch_text.rjust(self._n_digits * 2 + 1)
+            else:
+                epoch_text = str(self.now_epoch).rjust(self._n_digits)
+            epoch_text += f'/{self.n_epochs}'
+        else:
+            epoch_text = str(self.now_epoch)
+        self._epoch_text = epoch_text
+
     def set(self, **kwargs):
         """Set attributes."""
         for k, v in kwargs.items():
             setattr(self, k, v)
-        self._set_agg_fn()
+        self._set_attr()
 
     def reset(self):
         """Reset attributes. """
-        self.is_training = False
-        self.now_epoch = 1
+        self.is_running = False
+        self.now_epoch = 0
         self._text_length = 0
+        self._set_attr()
         self._epoch_reset()
-        self._set_agg_fn()
 
     def _epoch_reset(self):
         """Reset attributes for epoch."""
@@ -82,22 +112,14 @@ class Progress:
         self._epoch_value_weight = 0
         self.start_time = time.time()
         self.now_time = self.start_time
-        self._make_epoch_text()
-
-    def _make_epoch_text(self):
-        """Make epoch text."""
-        epoch_text = str(self.now_epoch)
-        if self.n_epochs:
-            epoch_text = epoch_text.rjust(len(str(self.n_epochs)))
-            epoch_text += f'/{self.n_epochs}'
-        self._epoch_text = epoch_text
+        self._set_attr()
 
     def start(self, **kwargs):
         """Start training. Initialize start time and epoch."""
         self.set(**kwargs)
         assert self.n_iter is not None, '"n_iter" is not set.'
-        self.is_training = True
-        self.now_epoch = 1
+        self.is_running = True
+        self.now_epoch = self._unit
         self._epoch_reset()
 
     def _draw(self):
@@ -146,20 +168,18 @@ class Progress:
                 If True, step() is called when the number of iterations
                 reaches n_iter. Defaults to True.
         """
-        if not self.is_training:
-            self._start()
-
+        assert self.is_running, 'Progress bar is not started. Call start().'
         self.now_iter += advance
         if value is not None:
             self.epoch_value += weight * value
             self._epoch_value_weight += weight
-        self.prop = min(self.now_iter / self.n_iter, 1)
+        self.prop = self.now_iter / (self.n_iter * self._unit)
         self.now_time = time.time()
         self._draw()
-        if auto_step and self.now_iter >= self.n_iter:
-            self.step(
-                self.leave_freq > 0 and not self.now_epoch % self.leave_freq
-            )
+        if auto_step and self.prop >= 1.:
+            leave = not (self.now_epoch // self._unit) % self.leave_freq
+            leave = self.leave_freq > 0 and leave
+            self.step(leave=leave)
 
     def step(self, leave: bool = True):
         """
@@ -173,7 +193,7 @@ class Progress:
             print('\n', end='')
         else:
             print('\r', ' ' * self._text_length, end='\r')
-        self.now_epoch += 1
+        self.now_epoch += self._unit
         self._epoch_reset()
 
 
