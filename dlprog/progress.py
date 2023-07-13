@@ -173,22 +173,12 @@ class Progress:
         self._epoch_reset()
 
 
-def train_progress(
-    n_iter: int = None,
-    n_epochs: int = None,
-    width: int = 40,
-    symbol: str = '#',
-) -> Progress:
+def train_progress(**kwargs) -> Progress:
     """
-    Return a progress bar for deep learning training.
+    Return a progress bar for machine learning training.
 
     Returns:
         Progress: Progress bar object.
     """
-    return Progress(
-        n_iter=n_iter,
-        n_epochs=n_epochs,
-        label='loss',
-        width=width,
-        symbol=symbol,
-    )
+    kwargs['label'] = 'loss'
+    return Progress(**kwargs)
