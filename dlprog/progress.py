@@ -54,6 +54,7 @@ class Progress:
     }
 
     def _set_agg_fn(self):
+        """Set aggregation function."""
         if isinstance(self.agg_fn, str):
             self._agg_fn = self._agg_fns[self.agg_fn]
         else:
@@ -74,6 +75,7 @@ class Progress:
         self._set_agg_fn()
 
     def _epoch_reset(self):
+        """Reset attributes for epoch."""
         self.now_iter = 0
         self.prop = 0.
         self.epoch_value = 0
@@ -83,6 +85,7 @@ class Progress:
         self._make_epoch_text()
 
     def _make_epoch_text(self):
+        """Make epoch text."""
         epoch_text = str(self.now_epoch)
         if self.n_epochs:
             epoch_text = epoch_text.rjust(len(str(self.n_epochs)))
@@ -98,6 +101,7 @@ class Progress:
         self._epoch_reset()
 
     def _draw(self):
+        """Draw progress bar."""
         index_text = f'{self._epoch_text}:'
         bar_text = self.symbol * int(self.width * self.prop)
         bar_text = bar_text.ljust(self.width)
