@@ -153,6 +153,11 @@ Output
 
 ## Version History
 
-### [1.0.0](https://pypi.org/project/dlprog/1.0.0/) (2023-07-13, Latest)
+### [1.0.0](https://pypi.org/project/dlprog/1.0.0/) (2023-07-13)
 - Add `Progress` class.
 - Add `train_progress` function.
+
+### [1.1.0](https://pypi.org/project/dlprog/1.1.0/) (2023-07-13, Latest)
+- Add `values` attribute.
+- Add `leave_freq` argument.
+- Add `unit` argument.
