@@ -133,7 +133,7 @@ class Progress:
             if self._unit >= 2:
                 first = (self.n_bar - 1) * self._unit + 1
                 last = self.n_bar * self._unit
-                epoch_text = f'{first}~{last}'
+                epoch_text = f'{first}-{last}'
                 epoch_text = epoch_text.rjust(self._n_digits * 2 + 1)
             else:
                 epoch_text = str(self.now_epoch).rjust(self._n_digits)
