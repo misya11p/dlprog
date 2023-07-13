@@ -21,6 +21,7 @@ class Progress:
         Progress bar class.
         When the following attributes are None, the progress bar is not 
         displayed correctly.
+        Attributes defined in this constructor will be default values.
 
         Args:
             n_iter (int):
@@ -72,50 +73,59 @@ class Progress:
             self._defaults[k] = v
 
     def _set_agg_fn(self):
-        """Set aggregation function."""
         if isinstance(self.agg_fn, str):
             self._agg_fn = self._agg_fns[self.agg_fn]
         else:
             self._agg_fn = self.agg_fn
 
     def _set_unit(self):
-        """Set unit."""
         self._unit = max(1, int(self.unit))
 
     def _set_n_epochs(self):
-        """Set number of epochs."""
         self._n_digits = len(str(self.n_epochs))
 
     def _set_attr(self):
-        """Set attributes."""
+        """Set internal attributes."""
         self._set_agg_fn()
         self._set_unit()
         self._set_n_epochs()
 
     def set(self, **kwargs):
-        """Set attributes."""
+        """Define attributes."""
         for k, v in kwargs.items():
             setattr(self, k, v)
         self._set_attr()
 
     def reset(self):
-        """Reset attributes. """
+        """Reset all attributes."""
         self.is_running = False
         self.now_epoch = 0
+        self.n_bar = 0
         self._text_length = 0
+        self.values = []
         self._reset_attr()
         self._set_attr()
         self._epoch_reset()
+        self._bar_reset()
 
     def _epoch_reset(self):
         """Reset attributes for epoch."""
         self.now_iter = 0
         self.prop = 0.
-        self.epoch_value = 0
-        self._epoch_value_weight = 0
+        self.value = 0
+        self.value_weight = 0
         self.start_time = time.time()
         self.now_time = self.start_time
         self._make_epoch_text()
+
+    def _bar_reset(self):
+        """Reset attributes for progress bar."""
+        self._bar_now_iter = 0
+        self._bar_prop = 0.
+        self._bar_value = 0
+        self._bar_value_weight = 0
+        self._bar_start_time = time.time()
+        self._bar_now_time = self.start_time
 
     def _make_epoch_text(self):
         """Make epoch text."""
@@ -132,24 +142,29 @@ class Progress:
         self._epoch_text = epoch_text
 
     def start(self, **kwargs):
-        """Start training. Initialize start time and epoch."""
+        """
+        Start running. Initialize start time and epoch. You can set the
+        attributes to be used at this runtime. If not set, the default
+        value is used.
+        """
         self.reset()
         self.set(**kwargs)
         assert self.n_iter is not None, '"n_iter" is not set.'
         self.is_running = True
-        self.now_epoch = self._unit
+        self.now_epoch = 1
+        self.n_bar = 1
         self._make_epoch_text()
 
     def _draw(self):
         """Draw progress bar."""
         index_text = f'{self._epoch_text}:'
-        bar_text = self.symbol * int(self.width * self.prop)
+        bar_text = self.symbol * int(self.width * self._bar_prop)
         bar_text = bar_text.ljust(self.width)
-        prop_text = f'{int(self.prop * 100)}%'.rjust(4)
+        prop_text = f'{int(self._bar_prop * 100)}%'.rjust(4)
         time_text = f'[{time_format(self.now_time - self.start_time)}]'
         value_text = f'{self.label}: ' if self.label else ''
-        if self._epoch_value_weight:
-            value = self._agg_fn(self.epoch_value, self._epoch_value_weight)
+        if self._bar_value_weight:
+            value = self._agg_fn(self._bar_value, self._bar_value_weight)
         else:
             value = 0.
         value_text += f'{value:.5f}'
@@ -161,8 +176,22 @@ class Progress:
             value_text
         ])
         print('\r' + ' ' * self._text_length, end='')
-        print('\r' + text, end='', flush=True)
+        print('\r' + text, end=' ', flush=True)
         self._text_length = len(text)
+
+    def _update_values(self, advance, value, weight):
+        """Update values."""
+        self.now_iter += advance
+        self._bar_now_iter += advance
+        if value is not None:
+            self.value += weight * value
+            self.value_weight += weight
+            self._bar_value += weight * value
+            self._bar_value_weight += weight
+        self.prop = self.now_iter / (self.n_iter * self._unit)
+        self._bar_prop = self._bar_now_iter / (self.n_iter * self._unit)
+        self.now_time = time.time()
+        self._bar_now_time = time.time()
 
     def update(
         self,
@@ -187,19 +216,16 @@ class Progress:
                 reaches n_iter. Defaults to True.
         """
         assert self.is_running, 'Progress bar is not started. Call start().'
-        self.now_iter += advance
-        if value is not None:
-            self.epoch_value += weight * value
-            self._epoch_value_weight += weight
-        self.prop = self.now_iter / (self.n_iter * self._unit)
-        self.now_time = time.time()
+        self._update_values(advance, value, weight)
+        self.prop = self.now_iter / self.n_iter
         self._draw()
         if auto_step and self.prop >= 1.:
-            leave = not (self.now_epoch // self._unit) % self.leave_freq
+            bar_step = self._bar_prop >= 1.
+            leave = not (self.n_bar % self.leave_freq)
             leave = self.leave_freq > 0 and leave
-            self.step(leave=leave)
+            self.step(bar_step=bar_step, leave=leave)
 
-    def step(self, leave: bool = True):
+    def step(self, bar_step: bool = True, leave: bool = True):
         """
         Step to the next epoch.
         
@@ -207,11 +233,15 @@ class Progress:
             leave (bool):
                 If True, leave the progress bar. Defaults to True.
         """
-        if leave:
-            print('\n', end='')
-        else:
-            print('\r', ' ' * self._text_length, end='\r')
-        self.now_epoch += self._unit
+        if bar_step:
+            if leave:
+                print('\n', end='')
+            else:
+                print('\r', ' ' * self._text_length, end='\r')
+            self.n_bar += 1
+            self._bar_reset()
+        self.values.append(self._agg_fn(self.value, self.value_weight))
+        self.now_epoch += 1
         self._epoch_reset()
 
 
