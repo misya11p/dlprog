@@ -14,6 +14,7 @@ class Progress:
         label: Optional[str] = 'value',
         width: int = 40,
         symbol: str = '#',
+        leave_freq: int = 1,
     ):
         """
         Progress bar class.
@@ -21,13 +22,22 @@ class Progress:
         displayed correctly.
 
         Args:
-            n_iter (int): Number of iterations per epoch.
-            n_epochs (int): Number of epochs.
+            n_iter (int):
+                Number of iterations per epoch. Defaults to None.
+            n_epochs (int):
+                Number of epochs. Defaults to None.
             agg_fn (Union[str, Callable[[Number, Number], Number]]):
-                Aggregation function for epoch value with weight. 
-            label (str): Label for progress bar.
-            width (int): Width of progress bar.
-            symbol (str): Symbol for progress bar.
+                Aggregation function for epoch value with weight.
+                Defaults to 'mean'.
+            label (str):
+                Label for progress bar. Defaults to 'value'.
+            width (int):
+                Width of progress bar. Defaults to 40.
+            symbol (str):
+                Symbol for progress bar. Defaults to '#'.
+            leave_freq (int):
+                Frequency of leaving the progress bar. If <= 0, none are
+                left. Defaults to 1.
         """
         self.n_iter = n_iter
         self.n_epochs = n_epochs
@@ -35,6 +45,7 @@ class Progress:
         self.label = label
         self.width = width
         self.symbol = symbol
+        self.leave_freq = leave_freq
         self.reset()
 
     _agg_fns = {
@@ -105,8 +116,8 @@ class Progress:
             time_text,
             value_text
         ])
-        print(' ' * self._text_length, end='\r')
-        print(text, end='\r', flush=True)
+        print('\r' + ' ' * self._text_length, end='')
+        print('\r' + text, end='', flush=True)
         self._text_length = len(text)
 
     def update(
@@ -142,11 +153,20 @@ class Progress:
         self.now_time = time.time()
         self._draw()
         if self.now_iter >= self.n_iter and auto_step:
-            self.step()
+            self.step(not self.now_epoch % self.leave_freq)
 
-    def step(self):
-        """Step to the next epoch."""
-        print()
+    def step(self, leave: bool = True):
+        """
+        Step to the next epoch.
+        
+        Args:
+            leave (bool):
+                If True, leave the progress bar. Defaults to True.
+        """
+        if leave:
+            print('\n', end='')
+        else:
+            print('\r', ' ' * self._text_length, end='\r')
         self.now_epoch += 1
         self._epoch_reset()
 
