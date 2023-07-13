@@ -58,6 +58,7 @@ class Progress:
         """Reset attributes. """
         self.is_training = False
         self.now_epoch = 1
+        self._text_length = 0
         self._epoch_reset()
         self._set_agg_fn()
 
@@ -85,7 +86,7 @@ class Progress:
         self.now_epoch = 1
         self._epoch_reset()
 
-    def _draw_bar(self):
+    def _draw(self):
         index_text = f'{self._epoch_text}:'
         bar_text = self.symbol * int(self.width * self.prop)
         bar_text = bar_text.ljust(self.width)
@@ -104,7 +105,9 @@ class Progress:
             time_text,
             value_text
         ])
+        print(' ' * self._text_length, end='\r')
         print(text, end='\r', flush=True)
+        self._text_length = len(text)
 
     def update(
         self,
@@ -137,7 +140,7 @@ class Progress:
             self._epoch_value_weight += weight
         self.prop = min(self.now_iter / self.n_iter, 1)
         self.now_time = time.time()
-        self._draw_bar()
+        self._draw()
         if self.now_iter >= self.n_iter and auto_step:
             self.step()
 
