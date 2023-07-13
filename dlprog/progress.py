@@ -153,7 +153,9 @@ class Progress:
         self.now_time = time.time()
         self._draw()
         if self.now_iter >= self.n_iter and auto_step:
-            self.step(not self.now_epoch % self.leave_freq)
+            self.step(
+                self.leave_freq > 0 and not self.now_epoch % self.leave_freq
+            )
 
     def step(self, leave: bool = True):
         """
