@@ -131,8 +131,9 @@ class Progress:
         """Make epoch text."""
         if self.n_epochs:
             if self._unit >= 2:
-                first = self.now_epoch - self._unit + 1
-                epoch_text = f'{first}~{self.now_epoch}'
+                first = (self.n_bar - 1) * self._unit + 1
+                last = self.n_bar * self._unit
+                epoch_text = f'{first}~{last}'
                 epoch_text = epoch_text.rjust(self._n_digits * 2 + 1)
             else:
                 epoch_text = str(self.now_epoch).rjust(self._n_digits)
@@ -161,7 +162,8 @@ class Progress:
         bar_text = self.symbol * int(self.width * self._bar_prop)
         bar_text = bar_text.ljust(self.width)
         prop_text = f'{int(self._bar_prop * 100)}%'.rjust(4)
-        time_text = f'[{time_format(self.now_time - self.start_time)}]'
+        bar_time = self._bar_now_time - self._bar_start_time
+        time_text = f'[{time_format(bar_time)}]'
         value_text = f'{self.label}: ' if self.label else ''
         if self._bar_value_weight:
             value = self._agg_fn(self._bar_value, self._bar_value_weight)
