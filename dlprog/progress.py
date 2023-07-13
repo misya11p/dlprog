@@ -152,7 +152,7 @@ class Progress:
         self.prop = min(self.now_iter / self.n_iter, 1)
         self.now_time = time.time()
         self._draw()
-        if self.now_iter >= self.n_iter and auto_step:
+        if auto_step and self.now_iter >= self.n_iter:
             self.step(
                 self.leave_freq > 0 and not self.now_epoch % self.leave_freq
             )
