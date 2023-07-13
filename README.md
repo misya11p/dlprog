@@ -61,7 +61,7 @@ Get each epoch's value
  0.3475107169240045]
 ```
 
-## In deep learning training
+## In machine learning training
 
 Setup
 
