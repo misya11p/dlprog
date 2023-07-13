@@ -24,7 +24,7 @@ class Progress:
             n_iter (int): Number of iterations per epoch.
             n_epochs (int): Number of epochs.
             agg_fn (Union[str, Callable[[Number, Number], Number]]):
-                Aggregation function for epoch value and weight. 
+                Aggregation function for epoch value with weight. 
             label (str): Label for progress bar.
             width (int): Width of progress bar.
             symbol (str): Symbol for progress bar.
