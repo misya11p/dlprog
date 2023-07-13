@@ -1,0 +1,7 @@
+.*
+!.gitignore
+__pycache__/
+requirements.txt
+dist
+build
+dlprog.egg-info
