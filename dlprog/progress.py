@@ -42,20 +42,34 @@ class Progress:
             unit (int):
                 Unit of progress bar (epoch). Defaults to 1.
         """
-        self.n_iter = n_iter
-        self.n_epochs = n_epochs
-        self.agg_fn = agg_fn
-        self.label = label
-        self.width = width
-        self.symbol = symbol
-        self.leave_freq = leave_freq
-        self.unit = unit
+        self._defaults = {
+            'n_iter': n_iter,
+            'n_epochs': n_epochs,
+            'agg_fn': agg_fn,
+            'label': label,
+            'width': width,
+            'symbol': symbol,
+            'leave_freq': leave_freq,
+            'unit': unit,
+        }
         self.reset()
 
     _agg_fns = {
         'mean': lambda s, w: s / w,
         'sum': lambda s, w: s,
     }
+
+    def _reset_attr(self):
+        """Set attributes to default values."""
+        for k, v in self._defaults.items():
+            setattr(self, k, v)
+        self._set_attr()
+
+    def set_defaults(self, **kwargs):
+        """Modify default values."""
+        for k, v in kwargs.items():
+            assert k in self._defaults, f'"{k}" is an invalid attribute.'
+            self._defaults[k] = v
 
     def _set_agg_fn(self):
         """Set aggregation function."""
@@ -65,30 +79,18 @@ class Progress:
             self._agg_fn = self.agg_fn
 
     def _set_unit(self):
+        """Set unit."""
         self._unit = max(1, int(self.unit))
 
     def _set_n_epochs(self):
+        """Set number of epochs."""
         self._n_digits = len(str(self.n_epochs))
 
     def _set_attr(self):
+        """Set attributes."""
         self._set_agg_fn()
         self._set_unit()
         self._set_n_epochs()
-        self._set_epoch_text()
-
-    def _set_epoch_text(self):
-        """Set epoch text."""
-        if self.n_epochs:
-            if self._unit >= 2:
-                first = self.now_epoch - self._unit + 1
-                epoch_text = f'{first}~{self.now_epoch}'
-                epoch_text = epoch_text.rjust(self._n_digits * 2 + 1)
-            else:
-                epoch_text = str(self.now_epoch).rjust(self._n_digits)
-            epoch_text += f'/{self.n_epochs}'
-        else:
-            epoch_text = str(self.now_epoch)
-        self._epoch_text = epoch_text
 
     def set(self, **kwargs):
         """Set attributes."""
@@ -101,6 +103,7 @@ class Progress:
         self.is_running = False
         self.now_epoch = 0
         self._text_length = 0
+        self._reset_attr()
         self._set_attr()
         self._epoch_reset()
 
@@ -112,15 +115,30 @@ class Progress:
         self._epoch_value_weight = 0
         self.start_time = time.time()
         self.now_time = self.start_time
-        self._set_attr()
+        self._make_epoch_text()
+
+    def _make_epoch_text(self):
+        """Make epoch text."""
+        if self.n_epochs:
+            if self._unit >= 2:
+                first = self.now_epoch - self._unit + 1
+                epoch_text = f'{first}~{self.now_epoch}'
+                epoch_text = epoch_text.rjust(self._n_digits * 2 + 1)
+            else:
+                epoch_text = str(self.now_epoch).rjust(self._n_digits)
+            epoch_text += f'/{self.n_epochs}'
+        else:
+            epoch_text = str(self.now_epoch)
+        self._epoch_text = epoch_text
 
     def start(self, **kwargs):
         """Start training. Initialize start time and epoch."""
+        self.reset()
         self.set(**kwargs)
         assert self.n_iter is not None, '"n_iter" is not set.'
         self.is_running = True
         self.now_epoch = self._unit
-        self._epoch_reset()
+        self._make_epoch_text()
 
     def _draw(self):
         """Draw progress bar."""
