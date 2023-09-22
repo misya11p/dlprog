@@ -16,6 +16,8 @@ class Progress:
         symbol: str = '#',
         leave_freq: int = 1,
         unit: int = 1,
+        note: str = '',
+        sep: str = ' '
     ):
         """
         Progress bar class.
@@ -42,6 +44,12 @@ class Progress:
                 left. Defaults to 1.
             unit (int):
                 Unit of progress bar (epoch). Defaults to 1.
+            note (str):
+                Note for progress bar. Defaults to ''.
+            sep (str):
+                Separator character for values and notes. Defaults to 
+                ' '.
+            
         """
         self._defaults = {
             'n_iter': n_iter,
@@ -52,6 +60,8 @@ class Progress:
             'symbol': symbol,
             'leave_freq': leave_freq,
             'unit': unit,
+            'note': note,
+            'sep': sep,
         }
         self.reset()
 
@@ -116,6 +126,7 @@ class Progress:
         self.value_weight = 0
         self.start_time = time.time()
         self.now_time = self.start_time
+        self.note = ''
         self._make_epoch_text()
 
     def _bar_reset(self):
@@ -154,6 +165,8 @@ class Progress:
         self.is_running = True
         self.now_epoch = 1
         self.n_bar = 1
+        self._defer = False
+        self._keep_step = False
         self._make_epoch_text()
 
     def _draw(self):
@@ -170,13 +183,16 @@ class Progress:
         else:
             value = 0.
         value_text += f'{value:.5f}'
+        note = self.note
         text = ' '.join([
             index_text,
             bar_text,
             prop_text,
             time_text,
-            value_text
+            value_text,
         ])
+        if note:
+            text += self.sep + note
         print('\r' + ' ' * self._text_length, end='', flush=True)
         print('\r' + text, end=' ', flush=True)
         self._text_length = len(text)
@@ -201,6 +217,8 @@ class Progress:
         weight: Number = 1,
         advance: int = 1,
         auto_step: bool = True,
+        note: Optional[str] = None,
+        defer: Optional[bool] = None,
     ):
         """
         Update progress bar and aggregate value.
@@ -216,16 +234,32 @@ class Progress:
             auto_step (bool, optional):
                 If True, step() is called when the number of iterations
                 reaches n_iter. Defaults to True.
+            note (Optional[str], optional):
+                Note for progress bar. Defaults to None.
+            defer (bool, optional):
+                If True, auto-step defer to the next update(). Use when
+                you want to add a note at the end of the epoch. Defaults
+                to True.
         """
         assert self.is_running, 'Progress bar is not started. Call start().'
         self._update_values(advance, value, weight)
         self.prop = self.now_iter / self.n_iter
+        if note is not None:
+            self.note = note
+        defer = defer if defer is not None else self._defer
         self._draw()
         if auto_step and self.prop >= 1.:
             bar_step = self._bar_prop >= 1.
             leave = not (self.n_bar % self.leave_freq)
             leave = self.leave_freq > 0 and leave
-            self.step(bar_step=bar_step, leave=leave)
+            if defer:
+                self._keep_step = True
+                self._keep_step_info = {
+                    'bar_step': bar_step,
+                    'leave': leave,
+                }
+            else:
+                self.step(bar_step=bar_step, leave=leave)
 
     def step(self, bar_step: bool = True, leave: bool = True):
         """
@@ -245,6 +279,19 @@ class Progress:
         self.values.append(self._agg_fn(self.value, self.value_weight))
         self.now_epoch += 1
         self._epoch_reset()
+
+    def memo(self, note: str):
+        """
+        Change note text for progress bar.
+
+        Args:
+            note (str): Text.
+        """
+        self.note = note
+        self._draw()
+        if self._keep_step:
+            self._keep_step = False
+            self.step(**self._keep_step_info)
 
 
 def train_progress(**kwargs) -> Progress:
