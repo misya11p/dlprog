@@ -249,10 +249,12 @@ class Progress:
 
 def train_progress(**kwargs) -> Progress:
     """
-    Return a progress bar for machine learning training.
+    Return a progress bar for machine learning training. The label just
+    defaults to 'loss'.
 
     Returns:
         Progress: Progress bar object.
     """
-    kwargs['label'] = 'loss'
+    if 'label' not in kwargs:
+        kwargs['label'] = 'loss'
     return Progress(**kwargs)
