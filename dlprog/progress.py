@@ -47,9 +47,8 @@ class Progress:
             note (str):
                 Note for progress bar. Defaults to ''.
             sep (str):
-                Separator character for values and notes. Defaults to 
+                Separator character for value and note. Defaults to 
                 ' '.
-            
         """
         self._defaults = {
             'n_iter': n_iter,
@@ -71,7 +70,7 @@ class Progress:
     }
 
     def _reset_attr(self):
-        """Set attributes to default values."""
+        """Set all attributes to default values."""
         for k, v in self._defaults.items():
             setattr(self, k, v)
         self._set_attr()
@@ -126,7 +125,7 @@ class Progress:
         self.value_weight = 0
         self.start_time = time.time()
         self.now_time = self.start_time
-        self.note = ''
+        self._epoch_note = self.note
         self._make_epoch_text()
 
     def _bar_reset(self):
@@ -165,8 +164,8 @@ class Progress:
         self.is_running = True
         self.now_epoch = 1
         self.n_bar = 1
-        self._defer = False
         self._keep_step = False
+        self._epoch_note = self.note
         self._make_epoch_text()
 
     def _draw(self):
@@ -183,7 +182,6 @@ class Progress:
         else:
             value = 0.
         value_text += f'{value:.5f}'
-        note = self.note
         text = ' '.join([
             index_text,
             bar_text,
@@ -191,9 +189,9 @@ class Progress:
             time_text,
             value_text,
         ])
-        if note:
-            text += self.sep + note
-        print('\r' + ' ' * self._text_length, end='', flush=True)
+        if self._epoch_note:
+            text += self.sep + self._epoch_note
+        print('\r' + ' ' * self._text_length, end='')
         print('\r' + text, end=' ', flush=True)
         self._text_length = len(text)
 
@@ -218,7 +216,7 @@ class Progress:
         advance: int = 1,
         auto_step: bool = True,
         note: Optional[str] = None,
-        defer: Optional[bool] = None,
+        defer: bool = False,
     ):
         """
         Update progress bar and aggregate value.
@@ -237,16 +235,15 @@ class Progress:
             note (Optional[str], optional):
                 Note for progress bar. Defaults to None.
             defer (bool, optional):
-                If True, auto-step defer to the next update(). Use when
-                you want to add a note at the end of the epoch. Defaults
-                to True.
+                If True, auto-step will be deferred until the next
+                memo() call. Use when you want to add a note at the end
+                of the epoch. Defaults to False.
         """
         assert self.is_running, 'Progress bar is not started. Call start().'
         self._update_values(advance, value, weight)
         self.prop = self.now_iter / self.n_iter
         if note is not None:
-            self.note = note
-        defer = defer if defer is not None else self._defer
+            self._epoch_note = note
         self._draw()
         if auto_step and self.prop >= 1.:
             bar_step = self._bar_prop >= 1.
@@ -287,7 +284,7 @@ class Progress:
         Args:
             note (str): Text.
         """
-        self.note = note
+        self._epoch_note = note
         self._draw()
         if self._keep_step:
             self._keep_step = False
