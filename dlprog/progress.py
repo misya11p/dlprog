@@ -177,7 +177,7 @@ class Progress:
             time_text,
             value_text
         ])
-        print('\r' + ' ' * self._text_length, end='')
+        print('\r' + ' ' * self._text_length, end='', flush=True)
         print('\r' + text, end=' ', flush=True)
         self._text_length = len(text)
 
