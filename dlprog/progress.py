@@ -20,6 +20,7 @@ class Progress:
         unit: int = 1,
         note: str = '',
         round: int = 5,
+        sep_label: str = ': ',
         sep_values: str = ', ',
         sep_note: str = ', ',
     ):
@@ -58,6 +59,9 @@ class Progress:
                 Note for progress bar. Defaults to ''.
             round (int):
                 Number of digits to round to. Default is 5.
+            sep_label (str):
+                Separator character for value and label.
+                Defaults to ': '.
             sep_values (str):
                 Separator character for values. Defaults to ', '.
             sep_note (str):
@@ -75,6 +79,7 @@ class Progress:
             'unit': unit,
             'note': note,
             'round': round,
+            'sep_label': sep_label,
             'sep_values': sep_values,
             'sep_note': sep_note,
         }
@@ -101,10 +106,11 @@ class Progress:
         else:
             self._agg_fn = self.agg_fn
 
-        # Set unit
-        self._unit = max(1, int(self.unit))
+        # Check unit
+        assert isinstance(self.unit, int), '"unit" must be an integer.'
+        assert self.unit > 0, '"unit" must be greater than 0.'
 
-        # Set n_digits
+        # Set epoch num of digits
         self._n_epoch_digits = len(str(self.n_epochs))
 
         # Set labels
@@ -157,9 +163,9 @@ class Progress:
     def _make_epoch_text(self):
         """Make epoch text."""
         if self.n_epochs:
-            if self._unit >= 2:
-                first = (self.n_bar - 1) * self._unit + 1
-                last = self.n_bar * self._unit
+            if self.unit >= 2:
+                first = (self.n_bar - 1) * self.unit + 1
+                last = self.n_bar * self.unit
                 epoch_text = f'{first}-{last}'
                 epoch_text = epoch_text.rjust(self._n_epoch_digits * 2 + 1)
             else:
@@ -196,8 +202,8 @@ class Progress:
         for label, value, weight in zip(
             self._labels, self._bar_values, self._bar_value_weights
         ):
-            value_text = f'{label}: ' if self.label else ''
-            if weight:  # Avoid ZeroDivisionError
+            value_text = label + self.sep_label if self.label else ''
+            if weight: # Avoid ZeroDivisionError
                 value = self._agg_fn(value, weight)
             else:
                 value = 0.
@@ -232,8 +238,8 @@ class Progress:
                 self._bar_values[i] += weight[i] * value[i]
                 self._bar_value_weights[i] += weight[i]
 
-        self.prop = self.now_iter / (self.n_iter * self._unit)
-        self._bar_prop = self._bar_now_iter / (self.n_iter * self._unit)
+        self.prop = self.now_iter / (self.n_iter * self.unit)
+        self._bar_prop = self._bar_now_iter / (self.n_iter * self.unit)
         self.now_time = time.time()
         self._bar_now_time = time.time()
 
@@ -324,14 +330,21 @@ class Progress:
             self.step(**self._keep_step_info)
 
 
-def train_progress(**kwargs) -> Progress:
+def train_progress(with_test: bool = False, **kwargs) -> Progress:
     """
     Return a progress bar for machine learning training. The label just
     defaults to 'loss'.
+
+    Args:
+        with_test (bool, optional):
+            If True, labels are added for 'test'. Defaults to False.
 
     Returns:
         Progress: Progress bar object.
     """
     if 'label' not in kwargs:
         kwargs['label'] = 'loss'
+    if with_test:
+        kwargs['label'] = ['loss train', 'test']
+        kwargs['width'] = 30
     return Progress(**kwargs)
