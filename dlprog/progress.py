@@ -245,6 +245,12 @@ class Progress:
                 argument, this argument takes precedence. The keys are
                 'label', 'values', and 'note'. Defaults to None.
         """
+        seps = kwargs.get('seps', {})
+        for sep in ['label', 'values', 'note']:
+            k = 'sep_' + sep
+            if sep not in seps:
+                seps[sep] = kwargs.get(k, getattr(self, k))
+        kwargs['seps'] = seps
         self.reset(**kwargs)
         assert self.n_iter is not None, '"n_iter" is not set.'
         self.is_running = True

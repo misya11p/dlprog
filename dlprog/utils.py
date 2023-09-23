@@ -35,5 +35,5 @@ def value_format(value: Number, digits: int) -> str:
     if digits > 0:
         text = f'{num:0.{digits}f}'
     else:
-        text = str(num)
+        text = str(int(num))
     return text
