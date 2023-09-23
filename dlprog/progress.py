@@ -378,12 +378,14 @@ class Progress:
 
 def train_progress(with_test: bool = False, **kwargs) -> Progress:
     """
-    Return a progress bar for machine learning training. The label just
-    defaults to 'loss'.
+    Return a progress bar that is suited for machine learning training.
 
     Args:
         with_test (bool):
-            If True, labels are added for 'test'. Defaults to False.
+            Calculate the loss for the test data at the end of the
+            epoch. If True, become defer=True for memo() at the end of
+            the epoch, and other fine adjustments are made. Defaults to
+            False.
 
     Returns:
         Progress: Progress bar object.
@@ -391,7 +393,8 @@ def train_progress(with_test: bool = False, **kwargs) -> Progress:
     if 'label' not in kwargs:
         kwargs['label'] = 'loss'
     if with_test:
-        kwargs['label'] = ['loss train', 'test']
+        kwargs['label'] = 'loss train'
         kwargs['width'] = 30
+        kwargs['defer'] = True
     prog = Progress(**kwargs)
     return prog
