@@ -198,7 +198,52 @@ class Progress:
         """
         Start running. Initialize start time and epoch. You can set the
         attributes to be used at this runtime. If not set, the default
-        value is used.
+        value is used. Arguemnts is the same as the constructor.
+
+        Args:
+            n_iter (int):
+                Number of iterations per epoch. Defaults to None.
+            n_epochs (int):
+                Number of epochs. Defaults to None.
+            label (Optional[Union[str, List[str]]]):
+                Label for progress bar. If you want to use multiple
+                values, input labels as an iterable. Defaults to None.
+            n_values (int):
+                Number of values to be aggregated. If this number
+                differs from the number of labels, the number of labels
+                is used. Use this when you want to set None to label.
+                Defaults to 1.
+            agg_fn (Union[str, Callable[[Number, Number], Number]]):
+                Aggregation function for epoch value with weight.
+                Defaults to 'mean'.
+            width (int):
+                Width of progress bar. Defaults to 40.
+            leave_freq (int):
+                Frequency of leaving the progress bar. If <= 0, none are
+                left. Defaults to 1.
+            unit (int):
+                Unit of progress bar (epoch). Defaults to 1.
+            defer (bool):
+                If True, auto-step will be deferred until the next
+                memo() call. Use when you want to update a note at the
+                end of the epoch. Defaults to False.
+            note (str):
+                Note for progress bar. Defaults to ''.
+            symbol (str):
+                Symbol for progress bar. Defaults to '#'.
+            round (int):
+                Number of digits to round to. Default is 5.
+            sep_label (str):
+                Separator character for value and label.
+                Defaults to ': '.
+            sep_values (str):
+                Separator character for values. Defaults to ', '.
+            sep_note (str):
+                Separator character for note. Defaults to ', '.
+            seps (Optional[Dict[str, str]]):
+                Separator characters. If it overlaps with an individual
+                argument, this argument takes precedence. The keys are
+                'label', 'values', and 'note'. Defaults to None.
         """
         self.reset(**kwargs)
         assert self.n_iter is not None, '"n_iter" is not set.'
