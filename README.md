@@ -104,7 +104,10 @@ If you want to obtain weighted exact values considering batch size:
 prog.update(loss.item(), weight=len(x))
 ```
 
-## Optional Usage
+## Advanced usage
+
+Advanced arguments, functions, etc.  
+Also, see [API Reference](https://misya11p.github.io/dlprog/) if you want to know more.
 
 ### `leave_freq`
 
@@ -243,7 +246,16 @@ If a required attribute (`n_iter`) has already been specified, `start()` can be 
 - Add `Progress` class.
 - Add `train_progress` function.
 
-### [1.1.0](https://pypi.org/project/dlprog/1.1.0/) (2023-07-13, Latest)
+### [1.1.0](https://pypi.org/project/dlprog/1.1.0/) (2023-07-13)
 - Add `values` attribute.
 - Add `leave_freq` argument.
 - Add `unit` argument.
+
+### [1.2.0](https://pypi.org/project/dlprog/1.2.0/) (2023-09-24, Latest)
+- Add `note` argument, `memo()` method, and `defer` argument.
+- Support multiple values.
+- Add `round` argument.
+- Support changing separator strings.
+- Support skipping `start()`.
+- Write API Reference.
+- Other minor adjustments.
