@@ -1,4 +1,4 @@
-from .utils import time_format
+from .utils import time_format, value_format
 import time
 from typing import Optional, Union, Callable, List
 
@@ -19,6 +19,7 @@ class Progress:
         leave_freq: int = 1,
         unit: int = 1,
         note: str = '',
+        round: int = 5,
         sep_values: str = ', ',
         sep_note: str = ', ',
     ):
@@ -55,6 +56,8 @@ class Progress:
                 Unit of progress bar (epoch). Defaults to 1.
             note (str):
                 Note for progress bar. Defaults to ''.
+            round (int):
+                Number of digits to round to. Default is 5.
             sep_values (str):
                 Separator character for values. Defaults to ', '.
             sep_note (str):
@@ -71,6 +74,7 @@ class Progress:
             'leave_freq': leave_freq,
             'unit': unit,
             'note': note,
+            'round': round,
             'sep_values': sep_values,
             'sep_note': sep_note,
         }
@@ -197,7 +201,7 @@ class Progress:
                 value = self._agg_fn(value, weight)
             else:
                 value = 0.
-            value_text += f'{value:.5f}'
+            value_text += value_format(value, self.round)
             value_texts.append(value_text)
         value_text = self.sep_values.join(value_texts)
         text = ' '.join([
