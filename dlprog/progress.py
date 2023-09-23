@@ -261,7 +261,7 @@ class Progress:
     def step(self, bar_step: bool = True, leave: bool = True):
         """
         Step to the next epoch.
-        
+
         Args:
             leave (bool):
                 If True, leave the progress bar. Defaults to True.
