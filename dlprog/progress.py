@@ -274,17 +274,17 @@ class Progress:
         Update progress bar and aggregate value.
 
         Args:
-            value (Optional[Union[Number, List[Number]]], optional):
+            value (Optional[Union[Number, List[Number]]]):
                 value. If None, only the progress bar advances. Defaults
                 to None.
-            weight (Union[Number, List[Number]], optional):
+            weight (Union[Number, List[Number]]):
                 weight of value. Defaults to 1.
-            advance (int, optional):
+            advance (int):
                 Number of iterations to advance. Defaults to 1.
-            auto_step (bool, optional):
+            auto_step (bool):
                 If True, step() is called when the number of iterations
                 reaches n_iter. Defaults to True.
-            note (Optional[str], optional):
+            note (Optional[str]):
                 Note for progress bar. Defaults to None.
         """
         if not self.is_running:
@@ -336,7 +336,7 @@ class Progress:
 
         Args:
             note (str): Text.
-            no_step (bool, optional):
+            no_step (bool):
                 If True, step() is not called when be deferred. Defaults
                 to False.
         """
@@ -353,7 +353,7 @@ def train_progress(with_test: bool = False, **kwargs) -> Progress:
     defaults to 'loss'.
 
     Args:
-        with_test (bool, optional):
+        with_test (bool):
             If True, labels are added for 'test'. Defaults to False.
 
     Returns:
