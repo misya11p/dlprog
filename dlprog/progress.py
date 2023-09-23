@@ -310,7 +310,7 @@ class Progress:
             self._bar_reset()
         value = [self._agg_fn(v, w) for v, w in zip(
             self._epoch_values, self._epoch_value_weights)]
-        if self.n_epochs == 1:
+        if self.n_values == 1:
             value = value[0]
         self.values.append(value)
         self.now_epoch += 1
@@ -347,4 +347,5 @@ def train_progress(with_test: bool = False, **kwargs) -> Progress:
     if with_test:
         kwargs['label'] = ['loss train', 'test']
         kwargs['width'] = 30
-    return Progress(**kwargs)
+    prog = Progress(**kwargs)
+    return prog
