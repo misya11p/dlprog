@@ -19,7 +19,8 @@ class Progress:
         leave_freq: int = 1,
         unit: int = 1,
         note: str = '',
-        sep: str = ', '
+        sep_values: str = ', ',
+        sep_note: str = ', ',
     ):
         """
         Progress bar class.
@@ -54,9 +55,10 @@ class Progress:
                 Unit of progress bar (epoch). Defaults to 1.
             note (str):
                 Note for progress bar. Defaults to ''.
-            sep (str):
-                Separator character for values and note. Defaults to 
-                ', '.
+            sep_values (str):
+                Separator character for values. Defaults to ', '.
+            sep_note (str):
+                Separator character for note. Defaults to ', '.
         """
         self._defaults = {
             'n_iter': n_iter,
@@ -69,7 +71,8 @@ class Progress:
             'leave_freq': leave_freq,
             'unit': unit,
             'note': note,
-            'sep': sep,
+            'sep_values': sep_values,
+            'sep_note': sep_note,
         }
         self.reset()
 
@@ -196,7 +199,7 @@ class Progress:
                 value = 0.
             value_text += f'{value:.5f}'
             value_texts.append(value_text)
-        value_text = self.sep.join(value_texts)
+        value_text = self.sep_values.join(value_texts)
         text = ' '.join([
             index_text,
             bar_text,
@@ -205,7 +208,7 @@ class Progress:
             value_text,
         ])
         if self._epoch_note:
-            text += self.sep + self._epoch_note
+            text += self.sep_note + self._epoch_note
         print('\r' + ' ' * self._text_length, end='')
         print('\r' + text, end=' ', flush=True)
         self._text_length = len(text)
