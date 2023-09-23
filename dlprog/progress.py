@@ -1,6 +1,6 @@
 from .utils import time_format, value_format
 import time
-from typing import Optional, Union, Callable, List
+from typing import Optional, Union, Callable, List, Dict
 
 
 Number = Union[int, float]
@@ -23,6 +23,7 @@ class Progress:
         sep_label: str = ': ',
         sep_values: str = ', ',
         sep_note: str = ', ',
+        seps: Optional[Dict[str, str]] = None,
     ):
         """
         Progress bar class.
@@ -66,6 +67,10 @@ class Progress:
                 Separator character for values. Defaults to ', '.
             sep_note (str):
                 Separator character for note. Defaults to ', '.
+            seps (Optional[Dict[str, str]]):
+                Separator characters. If it overlaps with an individual
+                argument, this argument takes precedence. The keys are
+                'label', 'values', and 'note'. Defaults to None.
         """
         self._defaults = {
             'n_iter': n_iter,
@@ -82,6 +87,7 @@ class Progress:
             'sep_label': sep_label,
             'sep_values': sep_values,
             'sep_note': sep_note,
+            'seps': seps,
         }
         self.reset()
 
@@ -121,6 +127,13 @@ class Progress:
         else:
             self._labels = self.label
         self.n_values = len(self._labels)
+
+        # Set separators
+        if self.seps is not None:
+            for k, v in self.seps.items():
+                assert k in ['label', 'values', 'note'], \
+                    f"seps key '{k}' is invalid."
+                setattr(self, 'sep_' + k, v)
 
     def set_defaults(self, **kwargs):
         """Modify default values."""
