@@ -1,23 +1,25 @@
 from .utils import time_format
 import time
-from typing import Optional, Union, Callable
+from typing import Optional, Union, Callable, List
 
 
 Number = Union[int, float]
+
 
 class Progress:
     def __init__(
         self,
         n_iter: Optional[int] = None,
         n_epochs: Optional[int] = None,
+        label: Optional[Union[str, List[str]]] = None,
+        n_values: int = 1,
         agg_fn: Union[None, str, Callable[[Number, Number], Number]] = 'mean',
-        label: Optional[str] = 'value',
         width: int = 40,
         symbol: str = '#',
         leave_freq: int = 1,
         unit: int = 1,
         note: str = '',
-        sep: str = ' '
+        sep: str = ', '
     ):
         """
         Progress bar class.
@@ -30,11 +32,17 @@ class Progress:
                 Number of iterations per epoch. Defaults to None.
             n_epochs (int):
                 Number of epochs. Defaults to None.
+            label (Optional[Union[str, List[str]]]):
+                Label for progress bar. If you want to use multiple
+                values, input labels as an iterable. Defaults to None.
+            n_values (int):
+                Number of values to be aggregated. If this number
+                differs from the number of labels, the number of labels
+                is used. Use this when you want to set None to label.
+                Defaults to 1.
             agg_fn (Union[str, Callable[[Number, Number], Number]]):
                 Aggregation function for epoch value with weight.
                 Defaults to 'mean'.
-            label (str):
-                Label for progress bar. Defaults to 'value'.
             width (int):
                 Width of progress bar. Defaults to 40.
             symbol (str):
@@ -47,14 +55,15 @@ class Progress:
             note (str):
                 Note for progress bar. Defaults to ''.
             sep (str):
-                Separator character for value and note. Defaults to 
-                ' '.
+                Separator character for values and note. Defaults to 
+                ', '.
         """
         self._defaults = {
             'n_iter': n_iter,
             'n_epochs': n_epochs,
-            'agg_fn': agg_fn,
             'label': label,
+            'n_values': n_values,
+            'agg_fn': agg_fn,
             'width': width,
             'symbol': symbol,
             'leave_freq': leave_freq,
@@ -69,51 +78,52 @@ class Progress:
         'sum': lambda s, w: s,
     }
 
-    def _reset_attr(self):
-        """Set all attributes to default values."""
-        for k, v in self._defaults.items():
+    def _set(self, **kwargs):
+        """Define attributes."""
+        args = self._defaults.copy()
+        args.update(kwargs)
+        for k, v in args.items():
             setattr(self, k, v)
         self._set_attr()
 
-    def set_defaults(self, **kwargs):
-        """Modify default values."""
-        for k, v in kwargs.items():
-            assert k in self._defaults, f'"{k}" is an invalid attribute.'
-            self._defaults[k] = v
-
-    def _set_agg_fn(self):
+    def _set_attr(self):
+        """Set internal attributes."""
+        # Set aggregation function
         if isinstance(self.agg_fn, str):
             self._agg_fn = self._agg_fns[self.agg_fn]
         else:
             self._agg_fn = self.agg_fn
 
-    def _set_unit(self):
+        # Set unit
         self._unit = max(1, int(self.unit))
 
-    def _set_n_epochs(self):
+        # Set n_digits
         self._n_digits = len(str(self.n_epochs))
 
-    def _set_attr(self):
-        """Set internal attributes."""
-        self._set_agg_fn()
-        self._set_unit()
-        self._set_n_epochs()
+        # Set labels
+        if self.label is None:
+            self._labels = ['' for _ in range(self.n_values)]
+        elif isinstance(self.label, str):
+            self._labels = [self.label]
+        else:
+            self._labels = self.label
+        self.n_values = len(self._labels)
 
-    def set(self, **kwargs):
-        """Define attributes."""
+    def set_defaults(self, **kwargs):
+        """Modify default values."""
         for k, v in kwargs.items():
-            setattr(self, k, v)
-        self._set_attr()
+            assert k in self._defaults, f"'{k}' is an invalid attribute."
+            self._defaults[k] = v
+        self._set()
 
-    def reset(self):
+    def reset(self, **kwargs):
         """Reset all attributes."""
         self.is_running = False
         self.now_epoch = 0
         self.n_bar = 0
         self._text_length = 0
         self.values = []
-        self._reset_attr()
-        self._set_attr()
+        self._set(**kwargs)
         self._epoch_reset()
         self._bar_reset()
 
@@ -121,8 +131,8 @@ class Progress:
         """Reset attributes for epoch."""
         self.now_iter = 0
         self.prop = 0.
-        self.value = 0
-        self.value_weight = 0
+        self._epoch_values = [0 for _ in range(self.n_values)]
+        self._epoch_value_weights = [0 for _ in range(self.n_values)]
         self.start_time = time.time()
         self.now_time = self.start_time
         self._epoch_note = self.note
@@ -132,8 +142,8 @@ class Progress:
         """Reset attributes for progress bar."""
         self._bar_now_iter = 0
         self._bar_prop = 0.
-        self._bar_value = 0
-        self._bar_value_weight = 0
+        self._bar_values = [0 for _ in range(self.n_values)]
+        self._bar_value_weights = [0 for _ in range(self.n_values)]
         self._bar_start_time = time.time()
         self._bar_now_time = self.start_time
 
@@ -158,8 +168,7 @@ class Progress:
         attributes to be used at this runtime. If not set, the default
         value is used.
         """
-        self.reset()
-        self.set(**kwargs)
+        self.reset(**kwargs)
         assert self.n_iter is not None, '"n_iter" is not set.'
         self.is_running = True
         self.now_epoch = 1
@@ -176,12 +185,18 @@ class Progress:
         prop_text = f'{int(self._bar_prop * 100)}%'.rjust(4)
         bar_time = self._bar_now_time - self._bar_start_time
         time_text = f'[{time_format(bar_time)}]'
-        value_text = f'{self.label}: ' if self.label else ''
-        if self._bar_value_weight:
-            value = self._agg_fn(self._bar_value, self._bar_value_weight)
-        else:
-            value = 0.
-        value_text += f'{value:.5f}'
+        value_texts = []
+        for label, value, weight in zip(
+            self._labels, self._bar_values, self._bar_value_weights
+        ):
+            value_text = f'{label}: ' if self.label else ''
+            if weight:  # Avoid ZeroDivisionError
+                value = self._agg_fn(value, weight)
+            else:
+                value = 0.
+            value_text += f'{value:.5f}'
+            value_texts.append(value_text)
+        value_text = self.sep.join(value_texts)
         text = ' '.join([
             index_text,
             bar_text,
@@ -200,10 +215,16 @@ class Progress:
         self.now_iter += advance
         self._bar_now_iter += advance
         if value is not None:
-            self.value += weight * value
-            self.value_weight += weight
-            self._bar_value += weight * value
-            self._bar_value_weight += weight
+            if isinstance(value, (int, float)):
+                value = [value]
+            if isinstance(weight, (int, float)):
+                weight = [weight for _ in range(self.n_values)]
+            for i in range(self.n_values):
+                self._epoch_values[i] += weight[i] * value[i]
+                self._epoch_value_weights[i] += weight[i]
+                self._bar_values[i] += weight[i] * value[i]
+                self._bar_value_weights[i] += weight[i]
+
         self.prop = self.now_iter / (self.n_iter * self._unit)
         self._bar_prop = self._bar_now_iter / (self.n_iter * self._unit)
         self.now_time = time.time()
@@ -211,8 +232,8 @@ class Progress:
 
     def update(
         self,
-        value: Optional[float] = None,
-        weight: Number = 1,
+        value: Optional[Union[Number, List[Number]]] = None,
+        weight: Union[Number, List[Number]] = 1,
         advance: int = 1,
         auto_step: bool = True,
         note: Optional[str] = None,
@@ -222,10 +243,10 @@ class Progress:
         Update progress bar and aggregate value.
 
         Args:
-            value (Optional[float]):
+            value (Optional[Union[Number, List[Number]]], optional):
                 value. If None, only the progress bar advances. Defaults
                 to None.
-            weight (Number, optional):
+            weight (Union[Number, List[Number]], optional):
                 weight of value. Defaults to 1.
             advance (int, optional):
                 Number of iterations to advance. Defaults to 1.
@@ -236,8 +257,8 @@ class Progress:
                 Note for progress bar. Defaults to None.
             defer (bool, optional):
                 If True, auto-step will be deferred until the next
-                memo() call. Use when you want to add a note at the end
-                of the epoch. Defaults to False.
+                memo() call. Use when you want to update a note at the
+                end of the epoch. Defaults to False.
         """
         assert self.is_running, 'Progress bar is not started. Call start().'
         self._update_values(advance, value, weight)
@@ -273,7 +294,11 @@ class Progress:
                 print('\r', ' ' * self._text_length, end='\r')
             self.n_bar += 1
             self._bar_reset()
-        self.values.append(self._agg_fn(self.value, self.value_weight))
+        value = [self._agg_fn(v, w) for v, w in zip(
+            self._epoch_values, self._epoch_value_weights)]
+        if self.n_epochs == 1:
+            value = value[0]
+        self.values.append(value)
         self.now_epoch += 1
         self._epoch_reset()
 
