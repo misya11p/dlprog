@@ -15,10 +15,11 @@ class Progress:
         n_values: int = 1,
         agg_fn: Union[None, str, Callable[[Number, Number], Number]] = 'mean',
         width: int = 40,
-        symbol: str = '#',
         leave_freq: int = 1,
         unit: int = 1,
+        defer: bool = False,
         note: str = '',
+        symbol: str = '#',
         round: int = 5,
         sep_label: str = ': ',
         sep_values: str = ', ',
@@ -49,15 +50,19 @@ class Progress:
                 Defaults to 'mean'.
             width (int):
                 Width of progress bar. Defaults to 40.
-            symbol (str):
-                Symbol for progress bar. Defaults to '#'.
             leave_freq (int):
                 Frequency of leaving the progress bar. If <= 0, none are
                 left. Defaults to 1.
             unit (int):
                 Unit of progress bar (epoch). Defaults to 1.
+            defer (bool):
+                If True, auto-step will be deferred until the next
+                memo() call. Use when you want to update a note at the
+                end of the epoch. Defaults to False.
             note (str):
                 Note for progress bar. Defaults to ''.
+            symbol (str):
+                Symbol for progress bar. Defaults to '#'.
             round (int):
                 Number of digits to round to. Default is 5.
             sep_label (str):
@@ -79,10 +84,11 @@ class Progress:
             'n_values': n_values,
             'agg_fn': agg_fn,
             'width': width,
-            'symbol': symbol,
             'leave_freq': leave_freq,
             'unit': unit,
+            'defer': defer,
             'note': note,
+            'symbol': symbol,
             'round': round,
             'sep_label': sep_label,
             'sep_values': sep_values,
@@ -216,7 +222,7 @@ class Progress:
             self._labels, self._bar_values, self._bar_value_weights
         ):
             value_text = label + self.sep_label if self.label else ''
-            if weight: # Avoid ZeroDivisionError
+            if weight:
                 value = self._agg_fn(value, weight)
             else:
                 value = 0.
@@ -263,7 +269,6 @@ class Progress:
         advance: int = 1,
         auto_step: bool = True,
         note: Optional[str] = None,
-        defer: bool = False,
     ):
         """
         Update progress bar and aggregate value.
@@ -281,10 +286,6 @@ class Progress:
                 reaches n_iter. Defaults to True.
             note (Optional[str], optional):
                 Note for progress bar. Defaults to None.
-            defer (bool, optional):
-                If True, auto-step will be deferred until the next
-                memo() call. Use when you want to update a note at the
-                end of the epoch. Defaults to False.
         """
         if not self.is_running:
             self.start()
@@ -297,7 +298,7 @@ class Progress:
             bar_step = self._bar_prop >= 1.
             leave = not (self.n_bar % self.leave_freq)
             leave = self.leave_freq > 0 and leave
-            if defer:
+            if self.defer:
                 self._keep_step = True
                 self._keep_step_info = {
                     'bar_step': bar_step,
