@@ -101,7 +101,7 @@ class Progress:
         self._unit = max(1, int(self.unit))
 
         # Set n_digits
-        self._n_digits = len(str(self.n_epochs))
+        self._n_epoch_digits = len(str(self.n_epochs))
 
         # Set labels
         if self.label is None:
@@ -157,9 +157,9 @@ class Progress:
                 first = (self.n_bar - 1) * self._unit + 1
                 last = self.n_bar * self._unit
                 epoch_text = f'{first}-{last}'
-                epoch_text = epoch_text.rjust(self._n_digits * 2 + 1)
+                epoch_text = epoch_text.rjust(self._n_epoch_digits * 2 + 1)
             else:
-                epoch_text = str(self.now_epoch).rjust(self._n_digits)
+                epoch_text = str(self.now_epoch).rjust(self._n_epoch_digits)
             epoch_text += f'/{self.n_epochs}'
         else:
             epoch_text = str(self.now_epoch)
