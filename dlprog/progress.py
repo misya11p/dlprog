@@ -42,8 +42,9 @@ class Progress:
             n_values (int):
                 Number of values to be aggregated. If this number
                 differs from the number of labels, the number of labels
-                is used. Use this when you want to set None to label.
-                Defaults to 1.
+                is used. Use this when you want to set None to label or
+                when you want to use multiple values with the same
+                label. Defaults to 1.
             agg_fn (Union[str, Callable[[Number, Number], Number]]):
                 Aggregation function for epoch value with weight.
                 Defaults to 'mean'.
@@ -123,7 +124,7 @@ class Progress:
         if self.label is None:
             self._labels = ['' for _ in range(self.n_values)]
         elif isinstance(self.label, str):
-            self._labels = [self.label]
+            self._labels = [self.label for _ in range(self.n_values)]
         else:
             self._labels = self.label
         self.n_values = len(self._labels)
