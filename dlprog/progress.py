@@ -316,16 +316,19 @@ class Progress:
         self.now_epoch += 1
         self._epoch_reset()
 
-    def memo(self, note: str):
+    def memo(self, note: str, no_step: bool = False):
         """
         Change note text for progress bar.
 
         Args:
             note (str): Text.
+            no_step (bool, optional):
+                If True, step() is not called when be deferred. Defaults
+                to False.
         """
         self._epoch_note = note
         self._draw()
-        if self._keep_step:
+        if self._keep_step and not no_step:
             self._keep_step = False
             self.step(**self._keep_step_info)
 
