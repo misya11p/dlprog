@@ -2,12 +2,17 @@
 
 *Deep Learning Progress*
 
-[![PyPI](https://img.shields.io/pypi/v/dlprog)](https://pypi.org/project/dlprog/1.0.0/)
+[![PyPI](https://img.shields.io/pypi/v/dlprog)](https://pypi.org/project/dlprog/)
 
 <br>
 
 A Python library for progress bars with the function of aggregating each iteration's value.  
 It helps manage the loss of each epoch in deep learning or machine learning training.
+
+![demo](docs/images/demo.gif)
+
+- [PyPI](https://pypi.org/project/dlprog/)
+- [API Reference](https://misya11p.github.io/dlprog/)
 
 ## Installation
 
@@ -29,10 +34,10 @@ Example
 ```python
 import random
 import time
-n_epochs = 5
+n_epochs = 3
 n_iter = 10
 
-prog.start(n_epochs=n_epochs, n_iter=n_iter) # Initialize start time and epoch.
+prog.start(n_epochs=n_epochs, n_iter=n_iter, label='value') # Initialize start time and epoch.
 for _ in range(n_epochs):
     for _ in range(n_iter):
         time.sleep(0.1)
@@ -43,27 +48,25 @@ for _ in range(n_epochs):
 Output
 
 ```
-1/5: ######################################## 100% [00:00:01.05] value: 0.45692 
-2/5: ######################################## 100% [00:00:01.05] value: 0.48990 
-3/5: ######################################## 100% [00:00:01.06] value: 0.56601 
-4/5: ######################################## 100% [00:00:01.06] value: 0.54549 
-5/5: ######################################## 100% [00:00:01.05] value: 0.34751 
+1/3: ######################################## 100% [00:00:01.05] value: 0.45692 
+2/3: ######################################## 100% [00:00:01.05] value: 0.48990 
+3/3: ######################################## 100% [00:00:01.06] value: 0.56601 
 ```
 
 Get each epoch's value
 
-```python
+```
 >>> prog.values
 [0.4569237062691406,
  0.4898950231979676,
- 0.5660061074197436,
- 0.545491839810675,
- 0.3475107169240045]
+ 0.5660061074197436]
 ```
 
 ## In machine learning training
 
-Setup
+Setup.   
+`train_progress` function is a shortcut for `Progress` class.
+Return a progress bar that is suited for machine learning training.
 
 ```python
 from dlprog import train_progress
@@ -73,7 +76,7 @@ prog = train_progress()
 Example. Case of training a deep learning model with PyTorch.
 
 ```python
-n_epochs = 5
+n_epochs = 3
 n_iter = len(dataloader)
 
 prog.start(n_epochs=n_epochs, n_iter=n_iter)
@@ -90,29 +93,25 @@ for _ in range(n_epochs):
 Output
 
 ```
-1/5: ######################################## 100% [00:00:03.08] loss: 0.34099 
-2/5: ######################################## 100% [00:00:03.12] loss: 0.15259 
-3/5: ######################################## 100% [00:00:03.14] loss: 0.10684 
-4/5: ######################################## 100% [00:00:03.15] loss: 0.08008 
-5/5: ######################################## 100% [00:00:03.20] loss: 0.06347 
+1/3: ######################################## 100% [00:00:03.08] loss: 0.34099 
+2/3: ######################################## 100% [00:00:03.12] loss: 0.15259 
+3/3: ######################################## 100% [00:00:03.14] loss: 0.10684 
 ```
 
-If you want to obtain exact values considering batch size:
+If you want to obtain weighted exact values considering batch size:
 
 ```python
 prog.update(loss.item(), weight=len(x))
 ```
 
-## Optional Arguments
+## Optional Usage
 
 ### `leave_freq`
 
-The frequency of leaving the progress bar.
+Argument that controls the frequency of leaving the progress bar.
 
 ```python
-n_epochs = 12
-n_iter = 10
-prog.start(n_epochs=n_epochs, n_iter=n_iter, leave_freq=4)
+prog.start(n_epochs=12, n_iter=3, leave_freq=4)
 for _ in range(n_epochs):
     for _ in range(n_iter):
         time.sleep(0.1)
@@ -130,12 +129,12 @@ Output
 
 ### `unit`
 
-Multiple epochs as a unit.
+Argument that multiple epochs as a unit.
 
 ```python
 n_epochs = 12
 n_iter = 10
-prog.start(n_epochs=n_epochs, n_iter=n_iter, unit=4)
+prog.start(n_epochs=12, n_iter=10, unit=4)
 for _ in range(n_epochs):
     for _ in range(n_iter):
         time.sleep(0.1)
@@ -150,6 +149,93 @@ Output
   5-8/12: ######################################## 100% [00:00:04.20] value: 0.51518 
  9-12/12: ######################################## 100% [00:00:04.18] value: 0.54546 
 ```
+
+### Add note
+
+You can add a note to the progress bar.
+
+```python
+prog.start(n_epochs=1, n_iter=10, note='This is a note')
+for _ in range(n_epochs):
+    for _ in range(n_iter):
+        time.sleep(0.1)
+        value = random.random()
+        prog.update(value)
+```
+
+Output
+
+```
+1/1: ######################################## 100% [00:00:01.05] 0.58703, This is a note 
+```
+
+You can also add a note when `update()` as `note` argument.  
+Also, you can add a note when end of epoch usin memo() if `defer=True`.
+
+```python
+prog.start(
+    n_epochs=3,
+    n_iter=len(trainloader),
+    label='train_loss',
+    defer=True,
+    width=20,
+)
+for _ in range(n_epochs):
+    for x, label in trainloader:
+        optimizer.zero_grad()
+        y = model(x)
+        loss = criterion(y, label)
+        loss.backward()
+        optimizer.step()
+        prog.update(loss.item())
+    test_loss = eval_model(model)
+    prog.memo(f'test_loss: {test_loss:.5f}')
+```
+
+Output
+
+```
+1/3: #################### 100% [00:00:02.83] train_loss: 0.34094, test_loss: 0.18194 
+2/3: #################### 100% [00:00:02.70] train_loss: 0.15433, test_loss: 0.12987 
+3/3: #################### 100% [00:00:02.79] train_loss: 0.10651, test_loss: 0.09783 
+```
+
+### Multiple values
+
+If you want to aggregate multiple values, set `n_values` and input values as a list.
+
+```python
+prog.start(n_epochs=3, n_iter=10, n_values=2)
+for _ in range(n_epochs):
+    for _ in range(n_iter):
+        time.sleep(0.1)
+        value1 = random.random()
+        value2 = random.random() * 10
+        prog.update([value1, value2])
+```
+
+Output
+
+```
+1/3: ######################################## 100% [00:00:01.05] 0.47956, 4.96049 
+2/3: ######################################## 100% [00:00:01.05] 0.30275, 4.86003 
+3/3: ######################################## 100% [00:00:01.05] 0.43296, 3.31025 
+```
+
+You can input multiple labels as a list instead of `n_values`.
+
+```python
+prog.start(n_epochs=3, n_iter=10, label=['value1', 'value2'])
+```
+
+### Default attributes
+
+`Progress` object keeps constructor arguments as default attributes.  
+These attributes are used when not specified in `start()`.
+
+Attributes specified in `start()` is used preferentially while this running (until next `start()` or `reset()`).
+
+If a required attribute (`n_iter`) has already been specified, `start()` can be skipped.
 
 ## Version History
 
