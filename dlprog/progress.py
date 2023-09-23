@@ -260,7 +260,8 @@ class Progress:
                 memo() call. Use when you want to update a note at the
                 end of the epoch. Defaults to False.
         """
-        assert self.is_running, 'Progress bar is not started. Call start().'
+        if not self.is_running:
+            self.start()
         self._update_values(advance, value, weight)
         self.prop = self.now_iter / self.n_iter
         if note is not None:
