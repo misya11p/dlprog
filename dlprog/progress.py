@@ -360,7 +360,7 @@ class Progress:
         self._epoch_reset()
         self._keep_step = False
 
-    def memo(self, note: Optional[str], no_step: bool = False):
+    def memo(self, note: Optional[str] = None, no_step: bool = False):
         """
         Change note text for progress bar.
 
