@@ -163,7 +163,7 @@ class Progress:
         self._bar_prop = 0.
         self._bar_values = [0 for _ in range(self.n_values)]
         self._bar_value_weights = [0 for _ in range(self.n_values)]
-        self._epoch_note = self.note
+        self._bar_note = self.note
         self._bar_start_time = time.time()
         self._bar_now_time = self.start_time
 
@@ -235,7 +235,7 @@ class Progress:
         self.now_epoch = 1
         self.n_bar = 1
         self._keep_step = False
-        self._epoch_note = self.note
+        self._bar_note = self.note
         self._make_epoch_text()
 
     def _draw(self):
@@ -265,8 +265,8 @@ class Progress:
             time_text,
             value_text,
         ])
-        if self._epoch_note:
-            text += self.sep_note + self._epoch_note
+        if self._bar_note:
+            text += self.sep_note + self._bar_note
         print('\r' + ' ' * self._text_length, end='')
         print('\r' + text, end=' ', flush=True)
         self._text_length = len(text)
@@ -321,7 +321,7 @@ class Progress:
         self._update_values(advance, value, weight)
         self.prop = self.now_iter / self.n_iter
         if note is not None:
-            self._epoch_note = note
+            self._bar_note = note
         self._draw()
         if auto_step and self.prop >= 1.:
             bar_step = self._bar_prop >= 1.
@@ -373,7 +373,7 @@ class Progress:
                 to False.
         """
         if note is not None:
-            self._epoch_note = note
+            self._bar_note = note
         self._draw()
         if self._keep_step and not no_step:
             self.step(**self._keep_step_info)
