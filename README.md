@@ -251,7 +251,7 @@ If a required attribute (`n_iter`) has already been specified, `start()` can be 
 - Add `leave_freq` argument.
 - Add `unit` argument.
 
-### [1.2.0](https://pypi.org/project/dlprog/1.2.0/) (2023-09-24, Latest)
+### [1.2.0](https://pypi.org/project/dlprog/1.2.0/) (2023-09-24)
 - Add `note` argument, `memo()` method, and `defer` argument.
 - Support multiple values.
 - Add `round` argument.
@@ -259,3 +259,7 @@ If a required attribute (`n_iter`) has already been specified, `start()` can be 
 - Support skipping `start()`.
 - Write API Reference.
 - Other minor adjustments.
+
+### [1.2.1](https://pypi.org/project/dlprog/1.2.1/) (2023-09-25, Latest)
+- Support `note=None` in `memo()`.
+- Change timing of note reset from epoch_reset to bar_reset.
