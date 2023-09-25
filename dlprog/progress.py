@@ -155,7 +155,6 @@ class Progress:
         self._epoch_value_weights = [0 for _ in range(self.n_values)]
         self.start_time = time.time()
         self.now_time = self.start_time
-        self._epoch_note = self.note
         self._make_epoch_text()
 
     def _bar_reset(self):
@@ -164,6 +163,7 @@ class Progress:
         self._bar_prop = 0.
         self._bar_values = [0 for _ in range(self.n_values)]
         self._bar_value_weights = [0 for _ in range(self.n_values)]
+        self._epoch_note = self.note
         self._bar_start_time = time.time()
         self._bar_now_time = self.start_time
 
@@ -358,21 +358,24 @@ class Progress:
         self.values.append(value)
         self.now_epoch += 1
         self._epoch_reset()
+        self._keep_step = False
 
-    def memo(self, note: str, no_step: bool = False):
+    def memo(self, note: Optional[str], no_step: bool = False):
         """
         Change note text for progress bar.
 
         Args:
-            note (str): Text.
+            note (Optional[str]):
+                Text. If None, the note is not changed. Defaults to
+                None.
             no_step (bool):
                 If True, step() is not called when be deferred. Defaults
                 to False.
         """
-        self._epoch_note = note
+        if note is not None:
+            self._epoch_note = note
         self._draw()
         if self._keep_step and not no_step:
-            self._keep_step = False
             self.step(**self._keep_step_info)
 
 
