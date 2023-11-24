@@ -114,7 +114,9 @@ Also, see [API Reference](https://misya11p.github.io/dlprog/) if you want to kno
 Argument that controls the frequency of leaving the progress bar.
 
 ```python
-prog.start(n_epochs=12, n_iter=3, leave_freq=4)
+n_epochs = 12
+n_iter = 10
+prog.start(n_epochs=n_epochs, n_iter=n_iter, leave_freq=4)
 for _ in range(n_epochs):
     for _ in range(n_iter):
         time.sleep(0.1)
@@ -137,7 +139,7 @@ Argument that multiple epochs as a unit.
 ```python
 n_epochs = 12
 n_iter = 10
-prog.start(n_epochs=12, n_iter=10, unit=4)
+prog.start(n_epochs=n_epochs, n_iter=n_iter, unit=4)
 for _ in range(n_epochs):
     for _ in range(n_iter):
         time.sleep(0.1)
@@ -158,26 +160,27 @@ Output
 You can add a note to the progress bar.
 
 ```python
-prog.start(n_epochs=1, n_iter=10, note='This is a note')
-for _ in range(n_epochs):
-    for _ in range(n_iter):
-        time.sleep(0.1)
-        value = random.random()
-        prog.update(value)
+n_iter = 10
+prog.start(n_iter=n_iter, note='This is a note')
+for _ in range(n_iter):
+    time.sleep(0.1)
+    value = random.random()
+    prog.update(value)
 ```
 
 Output
 
 ```
-1/1: ######################################## 100% [00:00:01.05] 0.58703, This is a note 
+1: ######################################## 100% [00:00:01.05] 0.58703, This is a note 
 ```
 
 You can also add a note when `update()` as `note` argument.  
 Also, you can add a note when end of epoch usin memo() if `defer=True`.
 
 ```python
+n_epochs = 3
 prog.start(
-    n_epochs=3,
+    n_epochs=n_epochs,
     n_iter=len(trainloader),
     label='train_loss',
     defer=True,
@@ -208,7 +211,9 @@ Output
 If you want to aggregate multiple values, set `n_values` and input values as a list.
 
 ```python
-prog.start(n_epochs=3, n_iter=10, n_values=2)
+n_epochs = 3
+n_iter = 10
+prog.start(n_epochs=n_epochs, n_iter=n_iter, n_values=2)
 for _ in range(n_epochs):
     for _ in range(n_iter):
         time.sleep(0.1)
@@ -228,7 +233,7 @@ Output
 You can input multiple labels as a list instead of `n_values`.
 
 ```python
-prog.start(n_epochs=3, n_iter=10, label=['value1', 'value2'])
+prog.start(n_iter=n_iter, label=['value1', 'value2'])
 ```
 
 ### Default attributes
