@@ -396,7 +396,6 @@ def train_progress(with_test: bool = False, **kwargs) -> Progress:
     if 'label' not in kwargs:
         kwargs['label'] = 'loss'
     if with_test:
-        kwargs['label'] = 'loss train'
         kwargs['width'] = 30
         kwargs['defer'] = True
     prog = Progress(**kwargs)
