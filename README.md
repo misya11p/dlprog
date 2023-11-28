@@ -269,5 +269,8 @@ If a required attribute (`n_iter`) has already been specified, `start()` can be 
 - Support `note=None` in `memo()`.
 - Change timing of note reset from epoch_reset to bar_reset.
 
-### [1.2.2](https://pypi.org/project/dlprog/1.2.2/) (2023-09-25, Latest)
+### [1.2.2](https://pypi.org/project/dlprog/1.2.2/) (2023-09-25)
 - Fix bug that not set `note=None` defaultly in `memo()`.
+
+### [1.2.3](https://pypi.org/project/dlprog/1.2.3/) (2023-11-28, Latest)
+- Fix bug that argument `label` is not available when `with_test=True` in `train_progress()`.
