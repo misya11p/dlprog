@@ -5,4 +5,4 @@ __all__ = [
     'train_progress',
 ]
 
-__version__ = '1.2.3'
+__version__ = '1.2.4'
