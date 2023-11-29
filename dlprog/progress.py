@@ -393,10 +393,9 @@ def train_progress(with_test: bool = False, **kwargs) -> Progress:
     Returns:
         Progress: Progress bar object.
     """
-    if 'label' not in kwargs:
-        kwargs['label'] = 'loss'
+    kwargs['label'] = kwargs.get('label', 'loss')
     if with_test:
-        kwargs['width'] = 30
+        kwargs['width'] = kwargs.get('width', 30)
         kwargs['defer'] = True
     prog = Progress(**kwargs)
     return prog
