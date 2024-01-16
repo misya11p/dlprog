@@ -4,6 +4,7 @@ from typing import Optional, Union, Callable, List, Dict
 
 
 Number = Union[int, float]
+Numbers = Union[Number, List[Number]]
 
 
 class Progress:
@@ -143,6 +144,7 @@ class Progress:
         self.n_bar = 0
         self._text_length = 0
         self.values = []
+        self._all_values = []
         self._set(**kwargs)
         self._epoch_reset()
         self._bar_reset()
@@ -153,6 +155,8 @@ class Progress:
         self.prop = 0.
         self._epoch_values = [0 for _ in range(self.n_values)]
         self._epoch_value_weights = [0 for _ in range(self.n_values)]
+        self._epoch_all_values = []
+        self._all_values.append(self._epoch_all_values)
         self.start_time = time.time()
         self.now_time = self.start_time
         self._make_epoch_text()
@@ -335,6 +339,7 @@ class Progress:
                 }
             else:
                 self.step(bar_step=bar_step, leave=leave)
+        self._epoch_all_values.append(value)
 
     def step(self, bar_step: bool = True, leave: bool = True):
         """
@@ -359,6 +364,27 @@ class Progress:
         self.now_epoch += 1
         self._epoch_reset()
         self._keep_step = False
+
+    def get_all_values(
+        self,
+        flatten: bool = False
+    ) -> Union[List[Numbers], List[List[Numbers]]]:
+        """
+        Get values of all iterations.
+
+        Args:
+            flatten (bool):
+                If True, flatten to 1D sequence. else, 2D sequence of
+                (epoch, value). Defaults to False.
+
+        Returns:
+            Union[List[Numbers], List[List[Numbers]]]:
+                List[value] if flatten=True, else List[List[value]].
+        """
+        if flatten:
+            return [v for epoch in self._all_values for v in epoch]
+        else:
+            return self._all_values
 
     def memo(self, note: Optional[str] = None, no_step: bool = False):
         """
