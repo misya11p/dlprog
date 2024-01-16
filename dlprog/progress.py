@@ -146,6 +146,7 @@ class Progress:
         self._text_length = 0
         self.values = []
         self._all_values = []
+        self._all_times = []
         self._set(**kwargs)
         self._epoch_reset()
         self._bar_reset()
@@ -158,6 +159,8 @@ class Progress:
         self._epoch_value_weights = [0 for _ in range(self.n_values)]
         self._epoch_all_values = []
         self._all_values.append(self._epoch_all_values)
+        self._epoch_all_times = []
+        self._all_times.append(self._epoch_all_times)
         self.start_time = time.time()
         self.now_time = self.start_time
         self._make_epoch_text()
@@ -248,6 +251,7 @@ class Progress:
         self._keep_step = False
         self._bar_note = self.note
         self._make_epoch_text()
+        self._tmp_time = self.now_time
 
     def _draw(self):
         """Draw progress bar."""
@@ -334,6 +338,9 @@ class Progress:
         if note is not None:
             self._bar_note = note
         self._draw()
+        self._epoch_all_values.append(value)
+        self._epoch_all_times.append(self.now_time - self._tmp_time)
+        self._tmp_time = self.now_time
         if auto_step and self.prop >= 1.:
             bar_step = self._bar_prop >= 1.
             leave = not (self.n_bar % self.leave_freq)
@@ -346,7 +353,6 @@ class Progress:
                 }
             else:
                 self.step(bar_step=bar_step, leave=leave)
-        self._epoch_all_values.append(value)
 
     def step(self, bar_step: bool = True, leave: bool = True):
         """
@@ -372,6 +378,17 @@ class Progress:
         self._epoch_reset()
         self._keep_step = False
 
+    def _get_data(self, data: str, flatten: bool = False):
+        if data == "value":
+            data = self._all_values
+        elif data == "time":
+            data = self._all_times
+        data = [epoch for epoch in data if epoch]
+        if flatten:
+            return [v for epoch in data for v in epoch]
+        else:
+            return data
+
     def get_all_values(
         self,
         flatten: bool = False
@@ -388,10 +405,25 @@ class Progress:
             Union[List[Numbers], List[List[Numbers]]]:
                 List[value] if flatten=True, else List[List[value]].
         """
-        if flatten:
-            return [v for epoch in self._all_values for v in epoch]
-        else:
-            return self._all_values
+        return self._get_data("value", flatten)
+
+    def get_all_times(
+        self,
+        flatten: bool = False
+    ) -> Union[List[Number], List[List[Number]]]:
+        """
+        Get times of all iterations.
+
+        Args:
+            flatten (bool):
+                If True, flatten to 1D sequence. else, 2D sequence of
+                (epoch, time). Defaults to False.
+
+        Returns:
+            List[Number]: List[time] if flatten=True, else
+                List[List[time]].
+        """
+        return self._get_data("time", flatten)
 
     def memo(self, note: Optional[str] = None, no_step: bool = False):
         """
