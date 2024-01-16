@@ -1,6 +1,7 @@
 from .utils import time_format, value_format
 import time
 from typing import Optional, Union, Callable, List, Dict
+import warnings
 
 
 Number = Union[int, float]
@@ -235,6 +236,12 @@ class Progress:
         """
         self.reset(**kwargs)
         assert self.n_iter is not None, "'n_iter' is not set."
+        if ("label" not in kwargs) and (self.label is None) \
+                and ("labels" in kwargs):
+            warnings.warn(
+                "'labels' is not a valid argument."
+                "Try using 'label' instead.",
+            )
         self.is_running = True
         self.now_epoch = 1
         self.n_bar = 1
