@@ -13,17 +13,17 @@ class Progress:
         n_epochs: Optional[int] = None,
         label: Optional[Union[str, List[str]]] = None,
         n_values: int = 1,
-        agg_fn: Union[None, str, Callable[[Number, Number], Number]] = 'mean',
+        agg_fn: Union[None, str, Callable[[Number, Number], Number]] = "mean",
         width: int = 40,
         leave_freq: int = 1,
         unit: int = 1,
         defer: bool = False,
-        note: str = '',
-        symbol: str = '#',
+        note: str = "",
+        symbol: str = "#",
         round: int = 5,
-        sep_label: str = ': ',
-        sep_values: str = ', ',
-        sep_note: str = ', ',
+        sep_label: str = ": ",
+        sep_values: str = ", ",
+        sep_note: str = ", ",
     ):
         """
         Progress bar class.
@@ -74,27 +74,27 @@ class Progress:
                 Separator character for note. Defaults to ', '.
         """
         self._defaults = {
-            'n_iter': n_iter,
-            'n_epochs': n_epochs,
-            'label': label,
-            'n_values': n_values,
-            'agg_fn': agg_fn,
-            'width': width,
-            'leave_freq': leave_freq,
-            'unit': unit,
-            'defer': defer,
-            'note': note,
-            'symbol': symbol,
-            'round': round,
-            'sep_label': sep_label,
-            'sep_values': sep_values,
-            'sep_note': sep_note,
+            "n_iter": n_iter,
+            "n_epochs": n_epochs,
+            "label": label,
+            "n_values": n_values,
+            "agg_fn": agg_fn,
+            "width": width,
+            "leave_freq": leave_freq,
+            "unit": unit,
+            "defer": defer,
+            "note": note,
+            "symbol": symbol,
+            "round": round,
+            "sep_label": sep_label,
+            "sep_values": sep_values,
+            "sep_note": sep_note,
         }
         self.reset()
 
     _agg_fns = {
-        'mean': lambda s, w: s / w,
-        'sum': lambda s, w: s,
+        "mean": lambda s, w: s / w,
+        "sum": lambda s, w: s,
     }
 
     def _set(self, **kwargs):
@@ -114,15 +114,15 @@ class Progress:
             self._agg_fn = self.agg_fn
 
         # Check unit
-        assert isinstance(self.unit, int), '"unit" must be an integer.'
-        assert self.unit > 0, '"unit" must be greater than 0.'
+        assert isinstance(self.unit, int), "'unit' must be an integer."
+        assert self.unit > 0, "'unit' must be greater than 0."
 
         # Set epoch num of digits
         self._n_epoch_digits = len(str(self.n_epochs))
 
         # Set labels
         if self.label is None:
-            self._labels = ['' for _ in range(self.n_values)]
+            self._labels = ["" for _ in range(self.n_values)]
         elif isinstance(self.label, str):
             self._labels = [self.label for _ in range(self.n_values)]
         else:
@@ -173,11 +173,11 @@ class Progress:
             if self.unit >= 2:
                 first = (self.n_bar - 1) * self.unit + 1
                 last = self.n_bar * self.unit
-                epoch_text = f'{first}-{last}'
+                epoch_text = f"{first}-{last}"
                 epoch_text = epoch_text.rjust(self._n_epoch_digits * 2 + 1)
             else:
                 epoch_text = str(self.now_epoch).rjust(self._n_epoch_digits)
-            epoch_text += f'/{self.n_epochs}'
+            epoch_text += f"/{self.n_epochs}"
         else:
             epoch_text = str(self.now_epoch)
         self._epoch_text = epoch_text
@@ -230,7 +230,7 @@ class Progress:
                 Separator character for note. Defaults to ', '.
         """
         self.reset(**kwargs)
-        assert self.n_iter is not None, '"n_iter" is not set.'
+        assert self.n_iter is not None, "'n_iter' is not set."
         self.is_running = True
         self.now_epoch = 1
         self.n_bar = 1
@@ -240,17 +240,17 @@ class Progress:
 
     def _draw(self):
         """Draw progress bar."""
-        index_text = f'{self._epoch_text}:'
+        index_text = f"{self._epoch_text}:"
         bar_text = self.symbol * int(self.width * self._bar_prop)
         bar_text = bar_text.ljust(self.width)
-        prop_text = f'{int(self._bar_prop * 100)}%'.rjust(4)
+        prop_text = f"{int(self._bar_prop * 100)}%".rjust(4)
         bar_time = self._bar_now_time - self._bar_start_time
-        time_text = f'[{time_format(bar_time)}]'
+        time_text = f"[{time_format(bar_time)}]"
         value_texts = []
         for label, value, weight in zip(
             self._labels, self._bar_values, self._bar_value_weights
         ):
-            value_text = label + self.sep_label if self.label else ''
+            value_text = label + self.sep_label if self.label else ""
             if weight:
                 value = self._agg_fn(value, weight)
             else:
@@ -258,7 +258,7 @@ class Progress:
             value_text += value_format(value, self.round)
             value_texts.append(value_text)
         value_text = self.sep_values.join(value_texts)
-        text = ' '.join([
+        text = " ".join([
             index_text,
             bar_text,
             prop_text,
@@ -267,8 +267,8 @@ class Progress:
         ])
         if self._bar_note:
             text += self.sep_note + self._bar_note
-        print('\r' + ' ' * self._text_length, end='')
-        print('\r' + text, end=' ', flush=True)
+        print("\r" + " " * self._text_length, end="")
+        print("\r" + text, end=" ", flush=True)
         self._text_length = len(text)
 
     def _update_values(self, advance, value, weight):
@@ -330,8 +330,8 @@ class Progress:
             if self.defer:
                 self._keep_step = True
                 self._keep_step_info = {
-                    'bar_step': bar_step,
-                    'leave': leave,
+                    "bar_step": bar_step,
+                    "leave": leave,
                 }
             else:
                 self.step(bar_step=bar_step, leave=leave)
@@ -346,9 +346,9 @@ class Progress:
         """
         if bar_step:
             if leave:
-                print('\n', end='')
+                print("\n", end="")
             else:
-                print('\r', ' ' * self._text_length, end='\r')
+                print("\r", " " * self._text_length, end="\r")
             self.n_bar += 1
             self._bar_reset()
         value = [self._agg_fn(v, w) for v, w in zip(
@@ -393,9 +393,9 @@ def train_progress(with_test: bool = False, **kwargs) -> Progress:
     Returns:
         Progress: Progress bar object.
     """
-    kwargs['label'] = kwargs.get('label', 'loss')
+    kwargs["label"] = kwargs.get("label", "loss")
     if with_test:
-        kwargs['width'] = kwargs.get('width', 30)
-        kwargs['defer'] = True
+        kwargs["width"] = kwargs.get("width", 30)
+        kwargs["defer"] = True
     prog = Progress(**kwargs)
     return prog
