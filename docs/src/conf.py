@@ -5,33 +5,33 @@
 
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../../'))
+sys.path.insert(0, os.path.abspath("../../"))
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'dlprog'
-copyright = '2023, misya11p'
-author = 'misya11p'
-release = '1.2.4'
+project = "dlprog"
+copyright = "2023, misya11p"
+author = "misya11p"
+release = "1.2.5"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.napoleon', 'sphinx.ext.githubpages']
+extensions = ["sphinx.ext.autodoc", "sphinx.ext.napoleon", "sphinx.ext.githubpages"]
 
-templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+templates_path = ["_templates"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'sphinx_rtd_theme'
-html_static_path = ['_static']
-autoclass_content = 'both'
-autodoc_member_order = 'bysource'
-autodoc_typehints = 'none'
+html_theme = "sphinx_rtd_theme"
+html_static_path = ["_static"]
+autoclass_content = "both"
+autodoc_member_order = "bysource"
+autodoc_typehints = "none"
 
-# build command: 'sphinx-build -b singlehtml ./docs/src ./docs/'
+# build command: "sphinx-build -b singlehtml ./docs/src ./docs/"
