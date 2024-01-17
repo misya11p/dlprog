@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dlprog 1.2.2 documentation</title>
+  <title>dlprog 1.2.5 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -13,7 +13,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=b1a96d41"></script>
+        <script src="_static/documentation_options.js?v=81662413"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -49,7 +49,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">dlprog 1.2.2 documentation</li>
+      <li class="breadcrumb-item active">dlprog 1.2.5 documentation</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -179,6 +179,46 @@ reaches n_iter. Defaults to True.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>leave</strong> (<em>bool</em>) – If True, leave the progress bar. Defaults to True.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dlprog.Progress.get_all_values">
+<span class="sig-name descname"><span class="pre">get_all_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flatten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dlprog.Progress.get_all_values" title="Link to this definition"></a></dt>
+<dd><p>Get values of all iterations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>flatten</strong> (<em>bool</em>) – If True, flatten to 1D sequence. else, 2D sequence of
+(epoch, value). Defaults to False.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[value] if flatten=True, else List[List[value]].</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[List[Numbers], List[List[Numbers]]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dlprog.Progress.get_all_times">
+<span class="sig-name descname"><span class="pre">get_all_times</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">flatten</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dlprog.Progress.get_all_times" title="Link to this definition"></a></dt>
+<dd><p>Get times of all iterations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>flatten</strong> (<em>bool</em>) – If True, flatten to 1D sequence. else, 2D sequence of
+(epoch, time). Defaults to False.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>List[time] if flatten=True, else</dt><dd><p>List[List[time]].</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[Number]</p>
 </dd>
 </dl>
 </dd></dl>
