@@ -248,15 +248,18 @@ If a required attribute (`n_iter`) has already been specified, `start()` can be 
 ## Version History
 
 ### [1.0.0](https://pypi.org/project/dlprog/1.0.0/) (2023-07-13)
+
 - Add `Progress` class.
 - Add `train_progress` function.
 
 ### [1.1.0](https://pypi.org/project/dlprog/1.1.0/) (2023-07-13)
+
 - Add `values` attribute.
 - Add `leave_freq` argument.
 - Add `unit` argument.
 
 ### [1.2.0](https://pypi.org/project/dlprog/1.2.0/) (2023-09-24)
+
 - Add `note` argument, `memo()` method, and `defer` argument.
 - Support multiple values.
 - Add `round` argument.
@@ -266,14 +269,23 @@ If a required attribute (`n_iter`) has already been specified, `start()` can be 
 - Other minor adjustments.
 
 ### [1.2.1](https://pypi.org/project/dlprog/1.2.1/) (2023-09-25)
+
 - Support `note=None` in `memo()`.
 - Change timing of note reset from epoch_reset to bar_reset.
 
 ### [1.2.2](https://pypi.org/project/dlprog/1.2.2/) (2023-09-25)
+
 - Fix bug that not set `note=None` defaultly in `memo()`.
 
 ### [1.2.3](https://pypi.org/project/dlprog/1.2.3/) (2023-11-28)
+
 - Fix bug that argument `label` is not available when `with_test=True` in `train_progress()`.
 
-### [1.2.4](https://pypi.org/project/dlprog/1.2.3/) (2023-11-29, Latest)
+### [1.2.4](https://pypi.org/project/dlprog/1.2.4/) (2023-11-29)
+
 - Fix bug that argument `width` is not available when `with_test=True` in `train_progress()`.
+
+### [1.2.5](https://pypi.org/project/dlprog/1.2.5/) (2024-01-17, Latest)
+
+- Add `get_all_values()` method.
+- Add `get_all_times()` method.
