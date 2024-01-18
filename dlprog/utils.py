@@ -14,8 +14,8 @@ def time_format(t: float) -> str:
         str: Formatted time string
     """
     h = t // (MPH * SPM)
-    m = t // MPH
-    s = t % MPH
+    m = (t % (MPH * SPM)) // SPM
+    s = t % SPM
     return f"{int(h):02}:{int(m):02}:{s:05.2f}"
 
 
