@@ -284,7 +284,11 @@ If a required attribute (`n_iter`) has already been specified, `start()` can be 
 
 - Fix bug that argument `width` is not available when `with_test=True` in `train_progress()`.
 
-### [1.2.5](https://pypi.org/project/dlprog/1.2.5/) (2024-01-17, Latest)
+### [1.2.5](https://pypi.org/project/dlprog/1.2.5/) (2024-01-17)
 
 - Add `get_all_values()` method.
 - Add `get_all_times()` method.
+
+### [1.2.6](https://pypi.org/project/dlprog/1.2.6/) (2024-01-18, Latest)
+
+- Fix bug that the time (minutes) is not displayed correctly.
