@@ -1,6 +1,6 @@
 from .utils import time_format, value_format
 import time
-from typing import Optional, Union, Callable, List, Dict
+from typing import Optional, Union, Callable, List
 import warnings
 
 
