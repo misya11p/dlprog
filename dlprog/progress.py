@@ -252,7 +252,7 @@ class Progress:
         if ("label" not in kwargs) and (self.label is None) \
                 and ("labels" in kwargs):
             warnings.warn(
-                "'labels' is not a valid argument."
+                "'labels' is not a valid argument. "
                 "Try using 'label' instead.",
             )
         self.is_running = True
