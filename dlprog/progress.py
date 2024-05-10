@@ -26,6 +26,8 @@ class Progress:
         sep_label: str = ": ",
         sep_values: str = ", ",
         sep_note: str = ", ",
+        store_all_values: bool = True,
+        store_all_times: bool = True,
     ):
         """
         Progress bar class.
@@ -74,6 +76,12 @@ class Progress:
                 Separator character for values. Defaults to ', '.
             sep_note (str):
                 Separator character for note. Defaults to ', '.
+            store_all_values (bool):
+                If True, store values of all iterations. Defaults to
+                True.
+            store_all_times (bool):
+                If True, store times of all iterations. Defaults to
+                True.
         """
         self._defaults = {
             "n_iter": n_iter,
@@ -91,6 +99,8 @@ class Progress:
             "sep_label": sep_label,
             "sep_values": sep_values,
             "sep_note": sep_note,
+            "store_all_values": store_all_values,
+            "store_all_times": store_all_times,
         }
         self.reset()
 
@@ -338,8 +348,12 @@ class Progress:
         if note is not None:
             self._bar_note = note
         self._draw()
-        self._epoch_all_values.append(value)
-        self._epoch_all_times.append(self.now_time - self._tmp_time)
+
+        if self.store_all_values:
+            self._epoch_all_values.append(value)
+        if self.store_all_times:
+            self._epoch_all_times.append(self.now_time - self._tmp_time)
+
         self._tmp_time = self.now_time
         if auto_step and self.prop >= 1.:
             bar_step = self._bar_prop >= 1.
@@ -380,8 +394,16 @@ class Progress:
 
     def _get_data(self, data: str, flatten: bool = False):
         if data == "value":
+            if not self.store_all_values:
+                warnings.warn(
+                    "store_all_values is False. No values are stored."
+                )
             data = self._all_values
         elif data == "time":
+            if not self.store_all_times:
+                warnings.warn(
+                    "store_all_times is False. No times are stored."
+                )
             data = self._all_times
         data = [epoch for epoch in data if epoch]
         if flatten:
