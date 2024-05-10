@@ -77,11 +77,11 @@ class Progress:
             sep_note (str):
                 Separator character for note. Defaults to ', '.
             store_all_values (bool):
-                If True, store values of all iterations. Defaults to
-                True.
+                If True, store values of all iterations. Set to False if
+                you want to reduce memory usage. Defaults to True.
             store_all_times (bool):
-                If True, store times of all iterations. Defaults to
-                True.
+                If True, store times of all iterations. Set to False if
+                you want to reduce memory usage. Defaults to True.
         """
         self._defaults = {
             "n_iter": n_iter,
