@@ -289,6 +289,10 @@ If a required attribute (`n_iter`) has already been specified, `start()` can be 
 - Add `get_all_values()` method.
 - Add `get_all_times()` method.
 
-### [1.2.6](https://pypi.org/project/dlprog/1.2.6/) (2024-01-18, Latest)
+### [1.2.6](https://pypi.org/project/dlprog/1.2.6/) (2024-01-18)
 
 - Fix bug that the time (minutes) is not displayed correctly.
+
+### [1.2.7](https://pypi.org/project/dlprog/1.2.7/) (2024-05-10, Latest)
+
+- Add `store_all_values` and `store_all_times` arguments.
