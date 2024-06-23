@@ -16,6 +16,7 @@ class Progress:
         label: Optional[Union[str, List[str]]] = None,
         n_values: int = 1,
         agg_fn: Union[None, str, Callable[[Number, Number], Number]] = "mean",
+        momentum: Optional[float] = None,
         width: int = 40,
         leave_freq: int = 1,
         unit: int = 1,
@@ -89,6 +90,7 @@ class Progress:
             "label": label,
             "n_values": n_values,
             "agg_fn": agg_fn,
+            "momentum": momentum,
             "width": width,
             "leave_freq": leave_freq,
             "unit": unit,
@@ -167,6 +169,7 @@ class Progress:
         self.prop = 0.
         self._epoch_values = [0 for _ in range(self.n_values)]
         self._epoch_value_weights = [0 for _ in range(self.n_values)]
+        self._now_values = [0 for _ in range(self.n_values)]
         self._epoch_all_values = []
         self._all_values.append(self._epoch_all_values)
         self._epoch_all_times = []
@@ -184,6 +187,29 @@ class Progress:
         self._bar_note = self.note
         self._bar_start_time = time.time()
         self._bar_now_time = self.start_time
+
+    def now_values(
+        self,
+        no_unpacked: bool = False
+    ) -> Union[Number, List[Number]]:
+        """
+        Get current values.
+
+        Args:
+            no_unpacked (bool):
+                If False, return a unpacked value if n_values=1.
+                Defaults to False.
+        Returns:
+            Union[Number, List[Number]]:
+                Current value if no_unpacked=True, else list of values.
+        """
+        if no_unpacked:
+            return self._now_values
+        else:
+            if self.n_values == 1:
+                return self._now_values[0]
+            else:
+                return self._now_values
 
     def _make_epoch_text(self):
         """Make epoch text."""
@@ -272,14 +298,8 @@ class Progress:
         bar_time = self._bar_now_time - self._bar_start_time
         time_text = f"[{time_format(bar_time)}]"
         value_texts = []
-        for label, value, weight in zip(
-            self._labels, self._bar_values, self._bar_value_weights
-        ):
+        for label, value in zip(self._labels, self._now_values):
             value_text = label + self.sep_label if self.label else ""
-            if weight:
-                value = self._agg_fn(value, weight)
-            else:
-                value = 0.
             value_text += value_format(value, self.round)
             value_texts.append(value_text)
         value_text = self.sep_values.join(value_texts)
@@ -310,6 +330,18 @@ class Progress:
                 self._epoch_value_weights[i] += weight[i]
                 self._bar_values[i] += weight[i] * value[i]
                 self._bar_value_weights[i] += weight[i]
+                if self.momentum:
+                    self._now_values[i] = (
+                        self.momentum * self._now_values[i]
+                        + (1 - self.momentum) * value[i]
+                    )
+                else:
+                    if self._bar_value_weights[i]:
+                        self._now_values[i] = self._agg_fn(
+                            self._bar_values[i], self._bar_value_weights[i]
+                        )
+                    else:
+                        self._now_values[i] = 0.
 
         self.prop = self.now_iter / (self.n_iter * self.unit)
         self._bar_prop = self._bar_now_iter / (self.n_iter * self.unit)
