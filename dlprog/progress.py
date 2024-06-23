@@ -174,7 +174,7 @@ class Progress:
         self.prop = 0.
         self._epoch_values = [0 for _ in range(self.n_values)]
         self._epoch_value_weights = [0 for _ in range(self.n_values)]
-        self._now_values = [0 for _ in range(self.n_values)]
+        self._now_epoch_values = [0 for _ in range(self.n_values)]
         self._epoch_all_values = []
         self._all_values.append(self._epoch_all_values)
         self._epoch_all_times = []
@@ -189,6 +189,7 @@ class Progress:
         self._bar_prop = 0.
         self._bar_values = [0 for _ in range(self.n_values)]
         self._bar_value_weights = [0 for _ in range(self.n_values)]
+        self._now_bar_values = [0 for _ in range(self.n_values)]
         self._bar_note = self.note
         self._bar_start_time = time.time()
         self._bar_now_time = self.start_time
@@ -198,7 +199,8 @@ class Progress:
         no_unpacked: bool = False
     ) -> Union[Number, List[Number]]:
         """
-        Get current values.
+        Get current epoch values. Note that the value may differ from
+        what is displayed on the progress bar.
 
         Args:
             no_unpacked (bool):
@@ -209,12 +211,12 @@ class Progress:
                 Current value if no_unpacked=True, else list of values.
         """
         if no_unpacked:
-            return self._now_values
+            return self._now_epoch_values
         else:
             if self.n_values == 1:
-                return self._now_values[0]
+                return self._now_epoch_values[0]
             else:
-                return self._now_values
+                return self._now_epoch_values
 
     def _make_epoch_text(self):
         """Make epoch text."""
@@ -308,7 +310,7 @@ class Progress:
         bar_time = self._bar_now_time - self._bar_start_time
         time_text = f"[{time_format(bar_time)}]"
         value_texts = []
-        for label, value in zip(self._labels, self._now_values):
+        for label, value in zip(self._labels, self._now_bar_values):
             value_text = label + self.sep_label if self.label else ""
             value_text += value_format(value, self.round)
             value_texts.append(value_text)
@@ -341,17 +343,25 @@ class Progress:
                 self._bar_values[i] += weight[i] * value[i]
                 self._bar_value_weights[i] += weight[i]
                 if self.momentum:
-                    self._now_values[i] = (
-                        self.momentum * self._now_values[i]
+                    self._now_bar_values[i] = (
+                        self.momentum * self._now_bar_values[i]
+                        + (1 - self.momentum) * value[i]
+                    )
+                    self._now_epoch_values[i] = (
+                        self.momentum * self._now_epoch_values[i]
                         + (1 - self.momentum) * value[i]
                     )
                 else:
                     if self._bar_value_weights[i]:
-                        self._now_values[i] = self._agg_fn(
+                        self._now_bar_values[i] = self._agg_fn(
                             self._bar_values[i], self._bar_value_weights[i]
                         )
+                        self._now_epoch_values[i] = self._agg_fn(
+                            self._epoch_values[i], self._epoch_value_weights[i]
+                        )
                     else:
-                        self._now_values[i] = 0.
+                        self._now_epoch_values[i] = 0.
+                        self._now_bar_values[i] = 0.
 
         self.prop = self.now_iter / (self.n_iter * self.unit)
         self._bar_prop = self._bar_now_iter / (self.n_iter * self.unit)
@@ -425,8 +435,7 @@ class Progress:
                 print("\r", " " * self._text_length, end="\r")
             self.n_bar += 1
             self._bar_reset()
-        value = [self._agg_fn(v, w) for v, w in zip(
-            self._epoch_values, self._epoch_value_weights)]
+        value = self._now_epoch_values
         if self.n_values == 1:
             value = value[0]
         self.values.append(value)
