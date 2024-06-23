@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dlprog 1.2.7 documentation</title>
+  <title>dlprog 1.2.8 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -13,7 +13,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=c072c72b"></script>
+        <script src="_static/documentation_options.js?v=d037ffe5"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -49,7 +49,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">dlprog 1.2.7 documentation</li>
+      <li class="breadcrumb-item active">dlprog 1.2.8 documentation</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -66,7 +66,7 @@ It helps manage the loss of each epoch in deep learning or machine learning trai
 <p><strong>source and usage</strong>: <a class="reference external" href="https://github.com/misya11p/dlprog">misya11p/dlprog</a></p>
 <dl class="py class">
 <dt class="sig sig-object py" id="dlprog.Progress">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dlprog.</span></span><span class="sig-name descname"><span class="pre">Progress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agg_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">40</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">leave_freq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">defer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">note</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symbol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">round</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">':</span> <span class="pre">'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">',</span> <span class="pre">'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep_note</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">',</span> <span class="pre">'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_all_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_all_times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dlprog.Progress" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dlprog.</span></span><span class="sig-name descname"><span class="pre">Progress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agg_fn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">momentum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">40</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">leave_freq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">defer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">note</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symbol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">round</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">':</span> <span class="pre">'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">',</span> <span class="pre">'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sep_note</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">',</span> <span class="pre">'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_all_values</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_all_times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dlprog.Progress" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Progress bar class.
 When the following attributes are None, the progress bar is not
@@ -86,6 +86,10 @@ when you want to use multiple values with the same
 label. Defaults to 1.</p></li>
 <li><p><strong>agg_fn</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>Callable</em><em>[</em><em>[</em><em>Number</em><em>, </em><em>Number</em><em>]</em><em>, </em><em>Number</em><em>]</em><em>]</em>) – Aggregation function for epoch value with weight.
 Defaults to ‘mean’.</p></li>
+<li><p><strong>momentum</strong> (<em>float</em>) – Momentum for updating values. If None, the value is
+updated by the aggregation function. If set, the value
+is updated by the exponential moving average, agg_fn and
+weight are ignored. Defaults to None.</p></li>
 <li><p><strong>width</strong> (<em>int</em>) – Width of progress bar. Defaults to 40.</p></li>
 <li><p><strong>leave_freq</strong> (<em>int</em>) – Frequency of leaving the progress bar. If &lt;= 0, none are
 left. Defaults to 1.</p></li>
@@ -120,6 +124,25 @@ you want to reduce memory usage. Defaults to True.</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="dlprog.Progress.now_values">
+<span class="sig-name descname"><span class="pre">now_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">no_unpacked</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dlprog.Progress.now_values" title="Link to this definition"></a></dt>
+<dd><p>Get current epoch values. Note that the value may differ from
+what is displayed on the progress bar.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>no_unpacked</strong> (<em>bool</em>) – If False, return a unpacked value if n_values=1.
+Defaults to False.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Current value if no_unpacked=True, else list of values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[Number, List[Number]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="dlprog.Progress.start">
 <span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dlprog.Progress.start" title="Link to this definition"></a></dt>
 <dd><p>Start running. Initialize start time and epoch. You can set the
@@ -138,6 +161,10 @@ is used. Use this when you want to set None to label.
 Defaults to 1.</p></li>
 <li><p><strong>agg_fn</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>Callable</em><em>[</em><em>[</em><em>Number</em><em>, </em><em>Number</em><em>]</em><em>, </em><em>Number</em><em>]</em><em>]</em>) – Aggregation function for epoch value with weight.
 Defaults to ‘mean’.</p></li>
+<li><p><strong>momentum</strong> (<em>float</em>) – Momentum for updating values. If None, the value is
+updated by the aggregation function. If set, the value
+is updated by the exponential moving average, agg_fn and
+weight are ignored. Defaults to None.</p></li>
 <li><p><strong>width</strong> (<em>int</em>) – Width of progress bar. Defaults to 40.</p></li>
 <li><p><strong>leave_freq</strong> (<em>int</em>) – Frequency of leaving the progress bar. If &lt;= 0, none are
 left. Defaults to 1.</p></li>
