@@ -244,6 +244,36 @@ Attributes specified in `start()` is used preferentially while this running (unt
 
 If a required attribute (`n_iter`) has already been specified, `start()` can be skipped.
 
+### `momentum`
+
+Update values by exponential moving average.
+
+```python
+now_values = []
+prog.start(n_iter=10, momentum=0.9, defer=True)
+for i in range(10):
+    prog.update(i)
+    now_values.append(prog.now_values())
+now_values
+```
+
+Output
+
+```
+1: ######################################## 100% [00:00:00.01] 3.48678
+
+[0.0,
+ 0.09999999999999998,
+ 0.2899999999999999,
+ 0.5609999999999999,
+ 0.9048999999999999,
+ 1.3144099999999999,
+ 1.7829689999999998,
+ 2.3046721,
+ 2.8742048899999997,
+ 3.4867844009999995]
+```
+
 ## Version History
 
 ### [1.0.0](https://pypi.org/project/dlprog/1.0.0/) (2023-07-13)
@@ -293,6 +323,11 @@ If a required attribute (`n_iter`) has already been specified, `start()` can be 
 
 - Fix bug that the time (minutes) is not displayed correctly.
 
-### [1.2.7](https://pypi.org/project/dlprog/1.2.7/) (2024-05-10, Latest)
+### [1.2.7](https://pypi.org/project/dlprog/1.2.7/) (2024-05-10)
 
 - Add `store_all_values` and `store_all_times` arguments.
+
+### [1.2.8](https://pypi.org/project/dlprog/1.2.8/) (2024-06-23, Latest)
+
+- Add `momentum` argument.
+- Add `now_values()` method.
