@@ -53,6 +53,11 @@ class Progress:
             agg_fn (Union[str, Callable[[Number, Number], Number]]):
                 Aggregation function for epoch value with weight.
                 Defaults to 'mean'.
+            momentum (float):
+                Momentum for updating values. If None, the value is
+                updated by the aggregation function. If set, the value
+                is updated by the exponential moving average, agg_fn and
+                weight are ignored. Defaults to None.
             width (int):
                 Width of progress bar. Defaults to 40.
             leave_freq (int):
@@ -248,6 +253,11 @@ class Progress:
             agg_fn (Union[str, Callable[[Number, Number], Number]]):
                 Aggregation function for epoch value with weight.
                 Defaults to 'mean'.
+            momentum (float):
+                Momentum for updating values. If None, the value is
+                updated by the aggregation function. If set, the value
+                is updated by the exponential moving average, agg_fn and
+                weight are ignored. Defaults to None.
             width (int):
                 Width of progress bar. Defaults to 40.
             leave_freq (int):
